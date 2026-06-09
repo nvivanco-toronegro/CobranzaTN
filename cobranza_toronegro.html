@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cobranza Toronegro · Canal Mayorista</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f7; color: #1a1a1a; line-height: 1.5; }
+  .header { background: #000; color: #fff; padding: 14px 24px; border-bottom: 4px solid #D32027; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-logo { height: 52px; width: auto; display: block; flex-shrink: 0; }
+  .header-text h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.3px; line-height: 1.1; }
+  .header-text p { margin: 4px 0 0 0; font-size: 12px; opacity: 0.7; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .header-actions button { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+  .header-actions button:hover { background: rgba(255,255,255,0.1); }
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .section-title { font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.8px; margin: 0 0 10px 0; }
+  .plazo-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
+  .pcard { background: #fff; padding: 14px 14px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .pcard:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
+  .pcard.active { border-color: #000; box-shadow: 0 0 0 2px #000; }
+  .pcard-contado { border-left: 4px solid #D32027; }
+  .pcard-7d { border-left: 4px solid #0ea5e9; }
+  .pcard-15d { border-left: 4px solid #6d28d9; }
+  .pcard-30d { border-left: 4px solid #16a34a; }
+  .pcard-sin { border-left: 4px solid #f59e0b; }
+  .pcard-moroso { border-left: 4px solid #000; background: #fef2f2; }
+  .pcard-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin: 0 0 6px 0; }
+  .pcard-value { font-size: 17px; font-weight: 700; margin: 0; }
+  .pcard-contado .pcard-value { color: #D32027; }
+  .pcard-7d .pcard-value { color: #0ea5e9; }
+  .pcard-15d .pcard-value { color: #6d28d9; }
+  .pcard-30d .pcard-value { color: #16a34a; }
+  .pcard-sin .pcard-value { color: #b54708; }
+  .pcard-moroso .pcard-value { color: #D32027; }
+  .pcard-sub { font-size: 10px; color: #888; margin: 4px 0 0 0; }
+  .pcard-moroso-flag { font-size: 10px; color: #D32027; font-weight: 600; margin: 3px 0 0 0; }
+  .controls { background: #fff; padding: 16px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 16px; }
+  .controls-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .switch-row { display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid #eee; flex-wrap: wrap; }
+  .switch-row label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; user-select: none; }
+  input[type="text"], input[type="date"], select, textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; font-family: inherit; background: #fff; }
+  input:focus, select:focus, textarea:focus { outline: 0; border-color: #D32027; box-shadow: 0 0 0 3px rgba(211,32,39,0.1); }
+  textarea { resize: vertical; min-height: 70px; }
+  .label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px 0; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tab { padding: 6px 14px; background: #fff; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; cursor: pointer; transition: all 0.15s; color: #444; }
+  .tab:hover { background: #f5f5f5; }
+  .tab.active { background: #000; color: #fff; border-color: #000; }
+  .tab small { opacity: 0.7; margin-left: 4px; }
+  .table-wrap { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: #fafafa; border-bottom: 2px solid #eee; }
+  th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
+  th.num { text-align: right; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  td.num { text-align: right; white-space: nowrap; }
+  tbody tr { cursor: pointer; transition: background 0.1s; }
+  tbody tr:hover { background: #fafafa; }
+  tbody tr.critico { background: #fef2f2; }
+  tbody tr.critico:hover { background: #fee2e2; }
+  tbody tr.moroso { background: #fffbeb; }
+  tbody tr.moroso:hover { background: #fef3c7; }
+  .vendor-pill { display: inline-block; padding: 2px 10px; background: #f5f5f5; border-radius: 999px; font-size: 11px; font-weight: 500; }
+  .vendor-pill.sin-asignar { background: #fff4e6; color: #b54708; }
+  .plazo-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .plazo-contado { background: #fee2e2; color: #D32027; }
+  .plazo-7 { background: #dbeafe; color: #0c4a6e; }
+  .plazo-15 { background: #ede9fe; color: #6d28d9; }
+  .plazo-30 { background: #dcfce7; color: #15803d; }
+  .plazo-sin { background: #fef3c7; color: #b54708; }
+  .estado-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .estado-pendiente { background: #f3f4f6; color: #4b5563; }
+  .estado-contactado { background: #dbeafe; color: #1e40af; }
+  .estado-agendado { background: #ede9fe; color: #6d28d9; }
+  .estado-en_pago { background: #fef3c7; color: #b54708; }
+  .estado-pagado { background: #dcfce7; color: #15803d; }
+  .estado-sin_contacto { background: #fee2e2; color: #D32027; }
+  .num-danger { color: #D32027; font-weight: 600; }
+  .num-warning { color: #b54708; font-weight: 500; }
+  .num-muted { color: #aaa; }
+  .alerts-cell { font-size: 10px; white-space: nowrap; }
+  .alerts-cell span { display: inline-block; padding: 1px 5px; border-radius: 3px; margin-right: 3px; font-weight: 600; }
+  .a-90 { background: #D32027; color: #fff; }
+  .a-credit { background: #0ea5e9; color: #fff; }
+  .a-novendor { background: #f59e0b; color: #fff; }
+  .a-closed { background: #444; color: #fff; }
+  .a-contado-deuda { background: #D32027; color: #fff; }
+  .a-comment { background: #6d28d9; color: #fff; }
+  .table-footer { background: #fafafa; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; border-top: 1px solid #eee; flex-wrap: wrap; gap: 8px; }
+  .btn { padding: 6px 12px; background: #D32027; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .btn:hover { background: #a01a20; }
+  .btn-outline { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+  .btn-outline:hover { background: #f5f5f5; }
+  .btn-success { background: #16a34a; }
+  .btn-success:hover { background: #15803d; }
+  .legend { background: #fff; padding: 10px 16px; border-radius: 8px; font-size: 11px; color: #666; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .legend strong { color: #1a1a1a; }
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 12px; max-width: 850px; width: 100%; max-height: calc(100vh - 80px); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+  .modal-header { background: linear-gradient(to right, #000 0%, #1a1a1a 100%); color: #fff; padding: 16px 20px; border-bottom: 3px solid #D32027; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; }
+  .modal-header p { margin: 4px 0 0 0; font-size: 12px; opacity: 0.7; }
+  .modal-close { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1; flex-shrink: 0; }
+  .modal-close:hover { background: rgba(255,255,255,0.1); }
+  .modal-body { padding: 20px; overflow-y: auto; }
+  .modal-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .modal-info-item { background: #fafafa; padding: 10px 12px; border-radius: 6px; }
+  .modal-info-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px 0; font-weight: 600; }
+  .modal-info-value { font-size: 14px; font-weight: 600; margin: 0; }
+  .modal-info-value.danger { color: #D32027; }
+  .modal-info-value.warning { color: #b54708; }
+  .modal-info-value.info { color: #0ea5e9; }
+  .gestion-section { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  .gestion-section h4 { margin: 0 0 12px 0; font-size: 13px; font-weight: 700; color: #1a1a1a; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+  .gestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .gestion-save-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .saved-indicator { font-size: 11px; color: #16a34a; font-weight: 500; }
+  .saved-indicator.hidden { opacity: 0; }
+  .modal-docs { border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+  .modal-docs table { font-size: 12px; }
+  .modal-docs th, .modal-docs td { padding: 8px 12px; }
+  .modal-docs tbody tr { cursor: default; }
+  .rango-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .rango-pill.r90 { background: #fee2e2; color: #D32027; }
+  .rango-pill.r61 { background: #fef3c7; color: #b54708; }
+  .rango-pill.r31 { background: #fef9c3; color: #854d0e; }
+  .rango-pill.r0 { background: #dcfce7; color: #15803d; }
+  /* Semáforo */
+  .sem { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; flex-shrink: 0; }
+  .sem-verde { background: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,0.2); }
+  .sem-amarillo { background: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.2); animation: pulse 2s infinite; }
+  .sem-rojo1 { background: #fca5a5; }
+  .sem-rojo2 { background: #ef4444; }
+  .sem-rojo3 { background: #dc2626; }
+  .sem-rojo4 { background: #b91c1c; }
+  .sem-rojo5 { background: #7f1d1d; box-shadow: 0 0 0 2px rgba(127,29,29,0.3); animation: pulse 1.5s infinite; }
+  .sem-gris { background: #d4d4d8; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .sem-mini { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .file-input { display: none; }
+  @media (max-width: 900px) { .plazo-row { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px) { .plazo-row { grid-template-columns: repeat(2, 1fr); } .controls-row, .gestion-grid { grid-template-columns: 1fr; } th, td { padding: 8px; font-size: 11px; } }
+
+  :root { color-scheme: light; }
+  /* ── DSO / Sucursal cards ── */
+  .dso-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .dso-card { background: #fff; padding: 14px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid #999; }
+  .dso-card.concon { border-left-color: #0ea5e9; }
+  .dso-card.serena { border-left-color: #D32027; }
+  .dso-card.local  { border-left-color: #16a34a; }
+  .dso-card.dso30  { border-left-color: #6d28d9; }
+  .dso-card.dso60  { border-left-color: #f59e0b; }
+  .dso-card.dso-global { border-left-color: #1a1a1a; }
+  .dso-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin: 0 0 4px 0; }
+  .dso-value { font-size: 20px; font-weight: 700; margin: 0; color: #1a1a1a; }
+  .dso-sub   { font-size: 10px; color: #888; margin: 3px 0 0 0; }
+  /* ── Collapsible panels ── */
+  .panel-box { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .panel-hdr { background: #1a1a1a; color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+  .panel-hdr h3 { margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .panel-hdr .toggle-icon { font-size: 12px; opacity: .7; }
+  .panel-body { padding: 16px; }
+  /* ── Aging bar ── */
+  .aging-bar-wrap { height: 28px; background: #f0f0f0; border-radius: 6px; overflow: hidden; display: flex; margin: 6px 0; }
+  .aging-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; overflow: hidden; white-space: nowrap; padding: 0 3px; transition: width .3s; }
+  /* ── Acuerdos ── */
+  .acuerdo-item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+  .acuerdo-item:last-child { margin-bottom: 0; }
+  .acuerdo-nombre { font-size: 13px; font-weight: 700; margin: 0 0 4px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .acuerdo-meta   { font-size: 11px; color: #888; margin: 0 0 7px 0; }
+  .acuerdo-texto  { font-size: 12px; color: #333; background: #fafafa; padding: 8px 10px; border-radius: 4px; margin: 0; line-height: 1.5; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div id="login-overlay" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:40px 32px;max-width:360px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.4);text-align:center;">
+    <div style="background:#000;color:#D32027;font-weight:900;font-size:22px;padding:10px 20px;border-radius:8px;display:inline-block;margin-bottom:20px;letter-spacing:1px;">TORO NEGRO</div>
+    <h2 style="margin:0 0 6px 0;font-size:20px;font-weight:700;">Cobranza Mayorista</h2>
+    <p style="margin:0 0 24px 0;color:#666;font-size:14px;">Selecciona tu nombre para continuar</p>
+    <select id="login-select" onchange="togglePinField()" style="width:100%;padding:12px 14px;border:2px solid #e5e5e5;border-radius:8px;font-size:15px;margin-bottom:16px;background:#f9f9f9;outline:none;cursor:pointer;">
+      <option value="">— Selecciona tu nombre —</option>
+      <option value="Nicolas">Nicolás (Maestro)</option>
+      <option value="Javiera">Javiera</option>
+      <option value="Gonzalo">Gonzalo</option>
+      <option value="Yanela">Yanela</option>
+      <option value="Jordy">Jordy</option>
+      <option value="Valeria">Valeria</option>
+      <option value="Diego Muñoz">Diego Muñoz</option>
+      <option value="Diego Avaria">Diego Avaria</option>
+    </select>
+    <div id="pin-field" style="display:none;margin-bottom:16px;">
+      <input id="login-pin" type="password" maxlength="4" placeholder="PIN (4 dígitos)" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding:12px 14px;border:2px solid #e5e5e5;border-radius:8px;font-size:20px;text-align:center;letter-spacing:8px;background:#f9f9f9;outline:none;box-sizing:border-box;" />
+      <p id="pin-error" style="display:none;color:#D32027;font-size:12px;margin:6px 0 0 0;font-weight:600;">PIN incorrecto. Inténtalo de nuevo.</p>
+    </div>
+    <button onclick="doLogin()" style="width:100%;padding:13px;background:#D32027;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">Entrar</button>
+    <p style="margin:16px 0 0 0;font-size:11px;color:#bbb;">Toro Negro · Canal Mayorista IV y V Región</p>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-left">
+    <div style="font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;font-family:Arial,sans-serif;">TORO<span style="color:#D32027;">NEGRO</span></div>
+    <div class="header-text">
+      <h1>Cobranza Canal Mayorista</h1>
+      <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.7;">Cuadratura al 08/06/2026 · DeFontana al 09/06/2026 · 130 clientes · 433 documentos</p>
+    </div>
+  </div>
+  <div class="header-actions">
+      <span id="usuario-badge" style="display:none;background:#D32027;color:#fff;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-right:4px;"></span>
+    <button onclick="exportGestion()" id="btn-reporte">🖨 Reporte</button>
+    <button onclick="exportComentarios()" id="btn-respaldar" style="display:none;">💾 Respaldar</button>
+    <button onclick="document.getElementById('import-file').click()" id="btn-importar" style="display:none;">📂 Importar</button>
+    <button onclick="exportCSV()" id="btn-csv" style="display:none;">📥 CSV</button>
+    <input type="file" id="import-file" class="file-input" accept=".json">
+  </div>
+</div>
+
+<div class="container">
+
+  <div id="dso-section">
+  <p class="section-title">Resumen por sucursal · Indicadores DSO</p>
+  <div class="dso-row" id="dso-cards"></div>
+  </div>
+
+  <p class="section-title">Plazos de crédito (click para filtrar)</p>
+  <div class="plazo-row" id="plazo-cards"></div>
+
+  <p class="section-title">Deuda por vendedor (click para filtrar tabla)</p>
+  <div class="plazo-row" id="vendor-resumen"></div>
+
+  <div class="controls">
+    <p class="label" style="margin-top: 0;">Sucursal</p>
+    <div class="tabs" id="suc-tabs"></div>
+    <p class="label">Vendedor</p>
+    <div class="tabs" id="vend-tabs"></div>
+    <div class="controls-row">
+      <div><p class="label">Buscar</p><input type="text" id="search" placeholder="Cliente o RUT..."></div>
+      <div><p class="label">Estado gestión</p>
+        <select id="estado-filter">
+          <option value="all">Todos</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="contactado">Contactado</option>
+          <option value="agendado">Agendado</option>
+          <option value="en_pago">En pago</option>
+          <option value="pagado">Pagado</option>
+          <option value="sin_contacto">Sin contacto</option>
+        </select>
+      </div>
+      <div><p class="label">Ordenar por</p>
+        <select id="sort">
+          <option value="urgencia">🚨 Urgencia (semáforo)</option>
+          <option value="riesgo">Riesgo (días vencidos)</option>
+          <option value="saldo">Saldo (mayor)</option>
+          <option value="reunion">Próxima reunión</option>
+          <option value="nombre">Nombre A-Z</option>
+        </select>
+      </div>
+    </div>
+    <div class="switch-row">
+      <label><input type="checkbox" id="solo-morosos"> <span><strong>Solo morosos</strong> (saldo vencido &gt;30 días)</span></label>
+      <label><input type="checkbox" id="con-comentario"> <span>Solo con gestión registrada</span></label>
+      <label><input type="checkbox" id="excluir-cerrado" checked> <span>Excluir Nueva Bocados (cerrado, $11.45M)</span></label>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Cliente</th><th>Vendedor</th><th>Plazo</th>
+        <th class="num">0-30</th><th class="num">31-60</th><th class="num">61-90</th><th class="num">&gt;90d</th>
+        <th class="num">Saldo</th><th>Estado</th><th>Reunión</th><th>Alertas</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="table-footer">
+      <span id="count">—</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn-outline" onclick="exportCSV()" style="padding: 6px 12px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; border-radius: 6px; font-size: 12px; cursor: pointer;">CSV datos</button>
+        <button class="btn-outline" onclick="exportGestionCSV()" style="padding: 6px 12px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; border-radius: 6px; font-size: 12px; cursor: pointer;">CSV gestión</button>
+        <button class="btn" onclick="exportGestion()">🖨 Reporte para imprimir / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <strong>Plazos:</strong> 
+    <span class="plazo-pill plazo-contado">Contado</span>
+    <span class="plazo-pill plazo-7">7 días</span>
+    <span class="plazo-pill plazo-15">15 días</span>
+    <span class="plazo-pill plazo-30">30 días</span>
+    <span class="plazo-pill plazo-sin">Sin política</span>
+    &nbsp;·&nbsp;
+    <strong>Moroso:</strong> cliente con saldo vencido más de 30 días (buckets 31-60, 61-90 o &gt;90).
+    <br><br>
+    <strong>Alertas:</strong>
+    <span class="a-90" style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:600;">90+</span> Crítico ·
+    <span class="a-contado-deuda" style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:600;">⚡</span> Contado con deuda ·
+    <span class="a-credit" style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:600;">$+</span> Sobre crédito ·
+    <span class="a-novendor" style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:600;">?</span> Sin vendedor ·
+    <span class="a-comment" style="display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:600;">📝</span> Con gestión
+    <br><br><strong>Click en cualquier cliente</strong> para ver facturas y registrar comentarios de gestión.
+  </div>
+</div>
+
+
+
+  <!-- ACUERDOS SEMANA ANTERIOR -->
+  <div class="panel-box">
+    <div class="panel-hdr" onclick="togglePanel('acuerdos-body','acuerdos-icon')">
+      <h3>📋 Acuerdos &amp; seguimiento semana anterior</h3>
+      <span class="toggle-icon" id="acuerdos-icon">▼</span>
+    </div>
+    <div class="panel-body" id="acuerdos-body">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+        <label style="font-size:12px;font-weight:600;color:#666;">Período:</label>
+        <select id="acuerdos-dias" onchange="renderAcuerdos()" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;">
+          <option value="7">Últimos 7 días</option>
+          <option value="14" selected>Últimos 14 días</option>
+          <option value="30">Últimos 30 días</option>
+        </select>
+        <button onclick="exportAcuerdosCSV()" style="padding:6px 12px;border:1px solid #ddd;background:#fff;color:#1a1a1a;border-radius:6px;font-size:12px;cursor:pointer;">📥 Exportar acuerdos</button>
+      </div>
+      <div id="acuerdos-lista"></div>
+    </div>
+  </div>
+
+  <!-- DSO POR VENDEDOR -->
+  <div class="panel-box">
+    <div class="panel-hdr" onclick="togglePanel('vendor-dso-body','vendor-dso-icon')">
+      <h3>👤 DSO y cartera por Vendedor</h3>
+      <span class="toggle-icon" id="vendor-dso-icon">▼</span>
+    </div>
+    <div class="panel-body" id="vendor-dso-body">
+      <div id="vendor-dso-tabla"></div>
+    </div>
+  </div>
+
+  <!-- COMPORTAMIENTO DE PAGO 90 DÍAS -->
+  <div class="panel-box">
+    <div class="panel-hdr" onclick="togglePanel('pago-body','pago-icon')">
+      <h3>📊 Comportamiento de pago · Aging 90 días</h3>
+      <span class="toggle-icon" id="pago-icon">▼</span>
+    </div>
+    <div class="panel-body" id="pago-body">
+      <div id="pago-contenido"></div>
+    </div>
+  </div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><h3 id="modal-title">—</h3><p id="modal-subtitle">—</p></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const data = [
+  {"rut":"77455931-0","nombre":"MOBILIARIA INVERSIONES ELITE L","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":2761531,"saldo":2761531,"docs":[{"numero":"14745","docto":"Factura","vencimiento":"2026-05-14","monto":120075},{"numero":"14748","docto":"Factura","vencimiento":"2026-05-14","monto":199601},{"numero":"14857","docto":"Factura","vencimiento":"2026-05-26","monto":978917},{"numero":"14860","docto":"Factura","vencimiento":"2026-05-26","monto":81141},{"numero":"14909","docto":"Factura","vencimiento":"2026-05-28","monto":357745},{"numero":"15066","docto":"Factura","vencimiento":"2026-06-03","monto":1024052}],"cliente_cerrado":false},
+  {"rut":"77381746-4","nombre":"AMELIE SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":2021724,"saldo":2021724,"docs":[{"numero":"14794","docto":"Factura","vencimiento":"2026-05-23","monto":631950},{"numero":"14815","docto":"Factura","vencimiento":"2026-05-24","monto":132859},{"numero":"14876","docto":"Factura","vencimiento":"2026-05-27","monto":347040},{"numero":"14922","docto":"Factura","vencimiento":"2026-05-28","monto":58512},{"numero":"15067","docto":"Factura","vencimiento":"2026-06-03","monto":640268},{"numero":"15114","docto":"Factura","vencimiento":"2026-06-05","monto":211095}],"cliente_cerrado":false},
+  {"rut":"77118150-3","nombre":"SOCIEDAD INDUSTRIAL BIOQUIM LI","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":1497419,"entre31_60":0,"entre0_30":0,"saldo":1497419,"docs":[{"numero":"13297","docto":"Factura","vencimiento":"2026-03-13","monto":576046},{"numero":"13447","docto":"Factura","vencimiento":"2026-03-28","monto":210987},{"numero":"13604","docto":"Factura","vencimiento":"2026-04-04","monto":179623},{"numero":"13740","docto":"Factura","vencimiento":"2026-04-10","monto":530763}],"cliente_cerrado":false},
+  {"rut":"77750016-3","nombre":"GRUPO GASTRONOMICO YAGNAM SP","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1338223,"saldo":1338223,"docs":[{"numero":"14877","docto":"Factura","vencimiento":"2026-05-27","monto":540},{"numero":"14966","docto":"Factura","vencimiento":"2026-05-30","monto":91293},{"numero":"14979","docto":"Factura","vencimiento":"2026-05-30","monto":45882},{"numero":"15029","docto":"Factura","vencimiento":"2026-06-02","monto":184080},{"numero":"15038","docto":"Factura","vencimiento":"2026-06-02","monto":304071},{"numero":"15060","docto":"Factura","vencimiento":"2026-06-03","monto":297730},{"numero":"15211","docto":"Factura","vencimiento":"2026-06-09","monto":77133},{"numero":"15213","docto":"Factura","vencimiento":"2026-06-09","monto":74105},{"numero":"15214","docto":"Factura","vencimiento":"2026-06-09","monto":263389}],"cliente_cerrado":false},
+  {"rut":"76437864-4","nombre":"SOCIEDAD COMERCIAL INSOMNIO GROUP CHILE LIMITADA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1184425,"saldo":1184425,"docs":[{"numero":"14749","docto":"Factura","vencimiento":"2026-05-14","monto":326764},{"numero":"14664","docto":"Factura","vencimiento":"2026-05-19","monto":285189},{"numero":"14813","docto":"Factura","vencimiento":"2026-05-24","monto":170977},{"numero":"14864","docto":"Factura","vencimiento":"2026-05-26","monto":239184},{"numero":"14949","docto":"Factura","vencimiento":"2026-05-29","monto":135303},{"numero":"15065","docto":"Factura","vencimiento":"2026-06-03","monto":312197}],"cliente_cerrado":false},
+  {"rut":"76996728-1","nombre":"PMJ SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1048061,"saldo":1048061,"docs":[{"numero":"15134","docto":"Factura","vencimiento":"2026-05-29","monto":294847},{"numero":"15145","docto":"Factura","vencimiento":"2026-05-29","monto":159836},{"numero":"15223","docto":"Factura","vencimiento":"2026-06-02","monto":593378},{"numero":"15402","docto":"Factura","vencimiento":"2026-06-09","monto":882384}],"cliente_cerrado":false},
+  {"rut":"77880279-1","nombre":"SOCIEDAD TRES RYD SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":976506,"saldo":976506,"docs":[{"numero":"15059","docto":"Factura","vencimiento":"2026-05-20","monto":622602},{"numero":"15085","docto":"Factura","vencimiento":"2026-05-21","monto":353904},{"numero":"15283","docto":"Factura","vencimiento":"2026-05-29","monto":355611},{"numero":"15455","docto":"Factura","vencimiento":"2026-06-04","monto":394573},{"numero":"15512","docto":"Factura","vencimiento":"2026-06-06","monto":206168}],"cliente_cerrado":false},
+  {"rut":"77726869-4","nombre":"CARNICERIA ,CAMILA FERNANDA RIVERA IBACACHE  E.I.R.L.","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":954505,"saldo":954505,"docs":[{"numero":"15150","docto":"Factura","vencimiento":"2026-05-29","monto":419738},{"numero":"15209","docto":"Factura","vencimiento":"2026-06-01","monto":308508},{"numero":"15257","docto":"Factura","vencimiento":"2026-06-03","monto":111530},{"numero":"15276","docto":"Factura","vencimiento":"2026-06-03","monto":157889},{"numero":"15320","docto":"Factura","vencimiento":"2026-06-05","monto":614362},{"numero":"15393","docto":"Factura","vencimiento":"2026-06-08","monto":182796},{"numero":"15409","docto":"Factura","vencimiento":"2026-06-09","monto":304097},{"numero":"15416","docto":"Factura","vencimiento":"2026-06-09","monto":72129}],"cliente_cerrado":false},
+  {"rut":"77589857-7","nombre":"EL CAIRO SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":949021,"saldo":949021,"docs":[{"numero":"15018","docto":"Factura","vencimiento":"2026-05-24","monto":1568},{"numero":"15139","docto":"Factura","vencimiento":"2026-05-29","monto":573674},{"numero":"15204","docto":"Factura","vencimiento":"2026-06-01","monto":373779},{"numero":"15288","docto":"Factura","vencimiento":"2026-06-04","monto":196343},{"numero":"15362","docto":"Factura","vencimiento":"2026-06-06","monto":639774}],"cliente_cerrado":false},
+  {"rut":"77499594-3","nombre":"EL FRAILE SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":785406,"saldo":785406,"docs":[{"numero":"14798","docto":"Factura","vencimiento":"2026-05-15","monto":785406}],"cliente_cerrado":false},
+  {"rut":"77179292-8","nombre":"NATURAL MAR","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":443,"entre31_60":0,"entre0_30":655921,"saldo":656364,"docs":[{"numero":"13459","docto":"Factura","vencimiento":"2026-03-28","monto":443},{"numero":"14887","docto":"Factura","vencimiento":"2026-05-27","monto":655921}],"cliente_cerrado":false},
+  {"rut":"78128614-1","nombre":"INVERSIONES DOMI SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":653822,"saldo":653822,"docs":[{"numero":"15027","docto":"Factura","vencimiento":"2026-05-25","monto":447654},{"numero":"15221","docto":"Factura","vencimiento":"2026-06-02","monto":206168},{"numero":"15258","docto":"Factura","vencimiento":"2026-06-03","monto":184417},{"numero":"15381","docto":"Factura","vencimiento":"2026-06-08","monto":475206}],"cliente_cerrado":false},
+  {"rut":"76449546-2","nombre":"AMASANDERIA Y PANADERIA LAZO SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":645724,"saldo":645724,"docs":[{"numero":"15200","docto":"Factura","vencimiento":"2026-06-01","monto":645724},{"numero":"15293","docto":"Factura","vencimiento":"2026-06-04","monto":429508},{"numero":"15314","docto":"Factura","vencimiento":"2026-06-04","monto":644742},{"numero":"15408","docto":"Factura","vencimiento":"2026-06-09","monto":983615}],"cliente_cerrado":false},
+  {"rut":"77432034-2","nombre":"INVERSIONES UNO CERO SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":644071,"saldo":644071,"docs":[{"numero":"15044","docto":"Factura","vencimiento":"2026-05-26","monto":157779},{"numero":"15106","docto":"Factura","vencimiento":"2026-05-28","monto":156973},{"numero":"15224","docto":"Factura","vencimiento":"2026-06-02","monto":329319},{"numero":"15291","docto":"Factura","vencimiento":"2026-06-04","monto":165489},{"numero":"15292","docto":"Factura","vencimiento":"2026-06-04","monto":169608},{"numero":"15324","docto":"Factura","vencimiento":"2026-06-05","monto":60055}],"cliente_cerrado":false},
+  {"rut":"77721931-6","nombre":"DORIS","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":386650,"saldo":386650,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":386650}],"cliente_cerrado":false},
+  {"rut":"22179883-K","nombre":"RAFAEL ROJAS","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":356498,"saldo":356498,"docs":[{"numero":"15149","docto":"Factura","vencimiento":"2026-05-29","monto":356498},{"numero":"15321","docto":"Factura","vencimiento":"2026-06-05","monto":106907},{"numero":"15391","docto":"Factura","vencimiento":"2026-06-08","monto":229669}],"cliente_cerrado":false},
+  {"rut":"78144876-1","nombre":"INVERSIONES AAM SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":340614,"saldo":340614,"docs":[{"numero":"15146","docto":"Factura","vencimiento":"2026-05-29","monto":340614},{"numero":"15311","docto":"Factura","vencimiento":"2026-06-04","monto":623458}],"cliente_cerrado":false},
+  {"rut":"78179591-7","nombre":"GASTRONOMICA ZABALA SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":266113,"saldo":266113,"docs":[{"numero":"15231","docto":"Factura","vencimiento":"2026-05-27","monto":188371},{"numero":"15220","docto":"Factura","vencimiento":"2026-06-01","monto":77742}],"cliente_cerrado":false},
+  {"rut":"76414832-0","nombre":"SERVICIOS HOTELEROS SERENA SUITE SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":227133,"saldo":227133,"docs":[{"numero":"15074","docto":"Factura","vencimiento":"2026-05-27","monto":124729},{"numero":"15131","docto":"Factura","vencimiento":"2026-05-29","monto":102404},{"numero":"15263","docto":"Factura","vencimiento":"2026-06-03","monto":45120},{"numero":"15313","docto":"Factura","vencimiento":"2026-06-04","monto":290400},{"numero":"15417","docto":"Factura","vencimiento":"2026-06-09","monto":91845}],"cliente_cerrado":false},
+  {"rut":"77315041-9","nombre":"EL TOLDITO AZUL SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":216990,"saldo":216990,"docs":[{"numero":"15206","docto":"Factura","vencimiento":"2026-06-01","monto":209230},{"numero":"15218","docto":"Factura","vencimiento":"2026-06-01","monto":7760},{"numero":"15312","docto":"Factura","vencimiento":"2026-06-04","monto":137144},{"numero":"15384","docto":"Factura","vencimiento":"2026-06-08","monto":250064}],"cliente_cerrado":false},
+  {"rut":"78227308-6","nombre":"SERVICIO DE APOYO A LA AGRICULTURA Y OTROS SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":205357,"saldo":205357,"docs":[{"numero":"15322","docto":"Factura","vencimiento":"2026-05-30","monto":188448},{"numero":"15217","docto":"Factura","vencimiento":"2026-06-01","monto":205357}],"cliente_cerrado":false},
+  {"rut":"12612776-6","nombre":"JESSICA DEL CARMEN PORTILLA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":159875,"saldo":159875,"docs":[{"numero":"14849","docto":"Factura","vencimiento":"2026-05-18","monto":638},{"numero":"15130","docto":"Factura","vencimiento":"2026-05-29","monto":159237},{"numero":"15253","docto":"Factura","vencimiento":"2026-06-03","monto":200197},{"numero":"15316","docto":"Factura","vencimiento":"2026-06-05","monto":153139},{"numero":"15352","docto":"Factura","vencimiento":"2026-06-06","monto":42889},{"numero":"15394","docto":"Factura","vencimiento":"2026-06-08","monto":13115}],"cliente_cerrado":false},
+  {"rut":"77846035-1","nombre":"INMOBILIARIA E INVERSIONES PRIME SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":135304,"saldo":135304,"docs":[{"numero":"14667","docto":"Factura","vencimiento":"2026-05-19","monto":141812},{"numero":"15079","docto":"Factura","vencimiento":"2026-06-04","monto":67652},{"numero":"15086","docto":"Factura","vencimiento":"2026-06-04","monto":67652}],"cliente_cerrado":false},
+  {"rut":"78357254-0","nombre":"INVERSIONES ARG SPA (FITTIPALDI)","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":111915,"saldo":111915,"docs":[{"numero":"15401","docto":"Factura","vencimiento":"2026-06-02","monto":56487}],"cliente_cerrado":false},
+  {"rut":"77924098-3","nombre":"SOCIEDAD AQUACOMPRAR SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":92349,"saldo":92349,"docs":[{"numero":"15092","docto":"Factura","vencimiento":"2026-05-27","monto":92349},{"numero":"15338","docto":"Factura","vencimiento":"2026-06-05","monto":161226},{"numero":"15392","docto":"Factura","vencimiento":"2026-06-08","monto":111323}],"cliente_cerrado":false},
+  {"rut":"17340373-9","nombre":"NELSON CASTILLO CABALLERO","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":65369,"saldo":65369,"docs":[{"numero":"15227","docto":"Factura","vencimiento":"2026-06-02","monto":65369}],"cliente_cerrado":false},
+  {"rut":"78227645-K","nombre":"GRUPO GATRONOMICO HAKARI SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":64136,"saldo":64136,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":64136}],"cliente_cerrado":false},
+  {"rut":"78022177-1","nombre":"COYANADEL SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":47122,"saldo":47122,"docs":[{"numero":"15162","docto":"Factura","vencimiento":"2026-05-29","monto":47122},{"numero":"15326","docto":"Factura","vencimiento":"2026-06-05","monto":64531}],"cliente_cerrado":false},
+  {"rut":"77533101-1","nombre":"INVERSIONES TAIKIN SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":41129,"saldo":41129,"docs":[{"numero":"15250","docto":"Factura","vencimiento":"2026-06-02","monto":41129}],"cliente_cerrado":false},
+  {"rut":"78014095-K","nombre":"TRATTORIA LA SERENA SPA","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":6,"saldo":6,"docs":[{"numero":"14871","docto":"Factura","vencimiento":"2026-05-12","monto":175958}],"cliente_cerrado":false},
+  {"rut":"77136699-6","nombre":"NUEVA BOCADOS SPA","vendedor":"Nicolas","origen":"La Serena","mayor90":8376715,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":8376715,"docs":[{"numero":"11527","docto":"Factura","vencimiento":"2026-01-02","monto":1707757},{"numero":"11558","docto":"Factura","vencimiento":"2026-01-04","monto":1759210},{"numero":"11657","docto":"Factura","vencimiento":"2026-01-07","monto":166448},{"numero":"11720","docto":"Factura","vencimiento":"2026-01-10","monto":1515721},{"numero":"11726","docto":"Factura","vencimiento":"2026-01-10","monto":228111},{"numero":"11932","docto":"Factura","vencimiento":"2026-01-12","monto":190792},{"numero":"11636","docto":"Factura","vencimiento":"2026-01-14","monto":2999468},{"numero":"11829","docto":"Factura","vencimiento":"2026-01-14","monto":318388},{"numero":"11846","docto":"Factura","vencimiento":"2026-01-15","monto":611267},{"numero":"12062","docto":"Factura","vencimiento":"2026-01-17","monto":183003},{"numero":"12095","docto":"Factura","vencimiento":"2026-01-26","monto":102301}],"cliente_cerrado":false},
+  {"rut":"77665765-4","nombre":"LIZBET GUTIERREZ GALVIZ SPA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":2108367,"saldo":2108367,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":2108367}],"cliente_cerrado":false},
+  {"rut":"76267771-7","nombre":"SERVICIOS DEL PACIFICO SPA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1422513,"saldo":1422513,"docs":[{"numero":"14704","docto":"Factura","vencimiento":"2026-06-05","monto":1422513}],"cliente_cerrado":false},
+  {"rut":"77628055-0","nombre":"COMERCIAL BRASERO LIMITADA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1214402,"saldo":1214402,"docs":[{"numero":"14795","docto":"Factura","vencimiento":"2026-05-15","monto":339349},{"numero":"15219","docto":"Factura","vencimiento":"2026-06-01","monto":875053}],"cliente_cerrado":false},
+  {"rut":"09705017-1","nombre":"PATRICIA VERONICA PEREZ LOPEZ","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":979028,"saldo":979028,"docs":[{"numero":"14859","docto":"Factura","vencimiento":"2026-05-18","monto":350802},{"numero":"14963","docto":"Factura","vencimiento":"2026-05-22","monto":363284},{"numero":"15140","docto":"Factura","vencimiento":"2026-05-29","monto":264942},{"numero":"15251","docto":"Factura","vencimiento":"2026-06-03","monto":242361},{"numero":"15331","docto":"Factura","vencimiento":"2026-06-05","monto":242361},{"numero":"15423","docto":"Factura","vencimiento":"2026-06-09","monto":240856}],"cliente_cerrado":false},
+  {"rut":"76304140-9","nombre":"HOTELERA PASTENE LIMITADA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":850218,"saldo":850218,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":850218}],"cliente_cerrado":false},
+  {"rut":"17112650-9","nombre":"GISSELE MOYA TOLEDO","vendedor":"Javiera","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":550187,"saldo":550187,"docs":[{"numero":"14764","docto":"Factura","vencimiento":"2026-05-08","monto":373639},{"numero":"14968","docto":"Factura","vencimiento":"2026-05-16","monto":176548},{"numero":"14652","docto":"Factura","vencimiento":"2026-05-19","monto":370527}],"cliente_cerrado":false},
+  {"rut":"76019721-1","nombre":"GOCHOS RESTOBAR","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":451586,"saldo":451586,"docs":[{"numero":"15185","docto":"Factura","vencimiento":"2026-05-30","monto":451586},{"numero":"15426","docto":"Factura","vencimiento":"2026-06-09","monto":655860}],"cliente_cerrado":false},
+  {"rut":"78000456-8","nombre":"COMERCIAL KADOSH SPA","vendedor":"Sin vendedor","origen":"La Serena","mayor90":416625,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":416625,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2025-12-01","monto":416625}],"cliente_cerrado":false},
+  {"rut":"78124864-9","nombre":"RESTAURANT Y SERVICIOS MOVIL D","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":399873,"saldo":399873,"docs":[{"numero":"14797","docto":"Factura","vencimiento":"2026-05-15","monto":173502},{"numero":"15097","docto":"Factura","vencimiento":"2026-05-27","monto":226371},{"numero":"15341","docto":"Factura","vencimiento":"2026-06-05","monto":273594}],"cliente_cerrado":false},
+  {"rut":"76417650-2","nombre":"SOCIEDAD COMERCIAL EL TESORO DE ELQUI LIMITADA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":383412,"saldo":383412,"docs":[{"numero":"15159","docto":"Factura","vencimiento":"2026-05-23","monto":308067},{"numero":"15169","docto":"Factura","vencimiento":"2026-05-23","monto":75345}],"cliente_cerrado":false},
+  {"rut":"77784755-4","nombre":"SKATEBURGER SPA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":275527,"saldo":275527,"docs":[{"numero":"15256","docto":"Factura","vencimiento":"2026-06-03","monto":224628},{"numero":"15327","docto":"Factura","vencimiento":"2026-06-05","monto":291170}],"cliente_cerrado":false},
+  {"rut":"76027097-0","nombre":"DOMINGO SEGUNDO CONTRERAS TURI","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":257464,"saldo":257464,"docs":[{"numero":"15113","docto":"Factura","vencimiento":"2026-05-28","monto":257464},{"numero":"15318","docto":"Factura","vencimiento":"2026-06-05","monto":227000}],"cliente_cerrado":false},
+  {"rut":"76521508-0","nombre":"LAS ENCINAS SPA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":179157,"saldo":179157,"docs":[{"numero":"15153","docto":"Factura","vencimiento":"2026-05-29","monto":179157},{"numero":"15286","docto":"Factura","vencimiento":"2026-06-04","monto":101701},{"numero":"15372","docto":"Factura","vencimiento":"2026-06-06","monto":82765},{"numero":"15429","docto":"Factura","vencimiento":"2026-06-09","monto":86368}],"cliente_cerrado":false},
+  {"rut":"76587972-8","nombre":"CENTRO DE EVENTOS Y HOTELERA AWA S.A.","vendedor":"Nicolas","origen":"La Serena","mayor90":4518,"entre61_90":0,"entre31_60":0,"entre0_30":126716,"saldo":131234,"docs":[{"numero":"11165","docto":"Factura","vencimiento":"2025-12-18","monto":4518},{"numero":"15235","docto":"Factura","vencimiento":"2026-06-02","monto":126716}],"cliente_cerrado":false},
+  {"rut":"76902171-K","nombre":"GRUPO UGARTE","vendedor":"Nicolas","origen":"La Serena","mayor90":75648,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":75648,"docs":[{"numero":"12764","docto":"Factura","vencimiento":"2026-02-20","monto":75228},{"numero":"15304","docto":"Factura","vencimiento":"2026-06-04","monto":229603}],"cliente_cerrado":false},
+  {"rut":"77658731-1","nombre":"CHARRO JACK SPA","vendedor":"Nicolas","origen":"La Serena","mayor90":0,"entre61_90":361,"entre31_60":0,"entre0_30":0,"saldo":361,"docs":[{"numero":"13507","docto":"Factura","vencimiento":"2026-03-23","monto":361}],"cliente_cerrado":false},
+  {"rut":"77404799-9","nombre":"SAN ROMULO SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":809200,"entre0_30":1884178,"saldo":2693378,"docs":[{"numero":"14483","docto":"Factura","vencimiento":"2026-05-13","monto":809200},{"numero":"14726","docto":"Factura","vencimiento":"2026-05-21","monto":1058996},{"numero":"14751","docto":"Factura","vencimiento":"2026-05-22","monto":825182}],"cliente_cerrado":false},
+  {"rut":"78307180-0","nombre":"CM SOCIEDAD GASTRONOMICA LIMIT","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1464213,"saldo":1464213,"docs":[{"numero":"15093","docto":"Factura","vencimiento":"2026-05-27","monto":655639},{"numero":"15239","docto":"Factura","vencimiento":"2026-06-02","monto":808574}],"cliente_cerrado":false},
+  {"rut":"78004678-3","nombre":"SIGLO LIMITADA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1456282,"saldo":1456282,"docs":[{"numero":"15225","docto":"Factura","vencimiento":"2026-05-27","monto":1456282},{"numero":"15294","docto":"Factura","vencimiento":"2026-05-29","monto":162792},{"numero":"15333","docto":"Factura","vencimiento":"2026-05-30","monto":444551},{"numero":"15377","docto":"Factura","vencimiento":"2026-06-01","monto":926308},{"numero":"15387","docto":"Factura","vencimiento":"2026-06-02","monto":1001061},{"numero":"15495","docto":"Factura","vencimiento":"2026-06-06","monto":2275411},{"numero":"15514","docto":"Factura","vencimiento":"2026-06-06","monto":254362}],"cliente_cerrado":false},
+  {"rut":"77702979-7","nombre":"BEACH GARDEN SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1001794,"saldo":1001794,"docs":[{"numero":"14961","docto":"Factura","vencimiento":"2026-05-30","monto":412700},{"numero":"15024","docto":"Factura","vencimiento":"2026-06-02","monto":589094}],"cliente_cerrado":false},
+  {"rut":"77663150-7","nombre":"HOTELERA DIEGO DE ALMAGRO LIMITADA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":589449,"saldo":589449,"docs":[{"numero":"14765","docto":"Factura","vencimiento":"2026-06-07","monto":589449}],"cliente_cerrado":false},
+  {"rut":"78174821-8","nombre":"SABORES INFINITOS SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":253872,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":253872,"docs":[{"numero":"11313","docto":"Factura","vencimiento":"2025-12-18","monto":125007},{"numero":"11335","docto":"Factura","vencimiento":"2025-12-18","monto":128865}],"cliente_cerrado":false},
+  {"rut":"76650611-9","nombre":"CONSTRUCTURA INKUBA SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":98054,"entre31_60":146633,"entre0_30":0,"saldo":244687,"docs":[{"numero":"13779","docto":"Factura","vencimiento":"2026-04-03","monto":98054},{"numero":"13917","docto":"Factura","vencimiento":"2026-04-09","monto":92179},{"numero":"13955","docto":"Factura","vencimiento":"2026-04-11","monto":54454}],"cliente_cerrado":false},
+  {"rut":"76407060-7","nombre":"LOS NIETOS INVERSIONES LIMITADA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":227634,"saldo":227634,"docs":[{"numero":"15103","docto":"Factura","vencimiento":"2026-05-28","monto":227634},{"numero":"15297","docto":"Factura","vencimiento":"2026-06-04","monto":481751}],"cliente_cerrado":false},
+  {"rut":"78288469-7","nombre":"VATOSLOCOS SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":183190,"saldo":183190,"docs":[{"numero":"14947","docto":"Factura","vencimiento":"2026-05-14","monto":46261},{"numero":"15236","docto":"Factura","vencimiento":"2026-05-26","monto":152206}],"cliente_cerrado":false},
+  {"rut":"77031116-0","nombre":"PUERTO PIZZA SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":139484,"entre0_30":0,"saldo":139484,"docs":[{"numero":"15337","docto":"Factura","vencimiento":"2026-06-05","monto":59012}],"cliente_cerrado":false},
+  {"rut":"77984403-K","nombre":"NATIVO GRILL","vendedor":"Gonzalo","origen":"La Serena","mayor90":87034,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":87034,"docs":[{"numero":"12491","docto":"Factura","vencimiento":"2026-02-11","monto":87034}],"cliente_cerrado":false},
+  {"rut":"76294975-K","nombre":"SOCIEDAD INVERSIONES OYARZUN H","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":83776,"saldo":83776,"docs":[{"numero":"15147","docto":"Factura","vencimiento":"2026-05-29","monto":83776}],"cliente_cerrado":false},
+  {"rut":"77127284-3","nombre":"GRUPO GRANIZO SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":49710,"saldo":49710,"docs":[{"numero":"15280","docto":"Factura","vencimiento":"2026-06-03","monto":124238}],"cliente_cerrado":false},
+  {"rut":"76255919-6","nombre":"MALUENDA PIZARRO E HIJAS LIMITADA","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":20381,"saldo":20381,"docs":[{"numero":"14936","docto":"Factura","vencimiento":"2026-05-21","monto":20381}],"cliente_cerrado":false},
+  {"rut":"77205591-9","nombre":"GASTRONOMIA PLAYA BEEF SPA","vendedor":"Gonzalo","origen":"La Serena","mayor90":769,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":769,"docs":[{"numero":"12348","docto":"Factura","vencimiento":"2026-02-05","monto":769}],"cliente_cerrado":false},
+  {"rut":"78173595-7","nombre":"Luka Brunch","vendedor":"Gonzalo","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":300,"saldo":300,"docs":[{"numero":"14987","docto":"Factura","vencimiento":"2026-05-22","monto":300}],"cliente_cerrado":false},
+  {"rut":"77103944-8","nombre":"PASTELERIA COQUIMBO SPA","vendedor":"Diego Muñoz","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":1118919,"entre0_30":2088116,"saldo":3207035,"docs":[{"numero":"14557","docto":"Factura","vencimiento":"2026-05-15","monto":1118919},{"numero":"14781","docto":"Factura","vencimiento":"2026-05-23","monto":605537},{"numero":"14810","docto":"Factura","vencimiento":"2026-05-24","monto":387433},{"numero":"15104","docto":"Factura","vencimiento":"2026-06-05","monto":873124},{"numero":"15126","docto":"Factura","vencimiento":"2026-06-06","monto":222022}],"cliente_cerrado":false},
+  {"rut":"77803910-9","nombre":"INMOB E INVERS. SAN IGNACIO L","vendedor":"Diego Muñoz","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1286211,"saldo":1286211,"docs":[{"numero":"14973","docto":"Factura","vencimiento":"2026-05-30","monto":555873}],"cliente_cerrado":false},
+  {"rut":"78140491-8","nombre":"GRUPO OF ANSIETA SPA","vendedor":"Diego Muñoz","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":369889,"saldo":369889,"docs":[{"numero":"14970","docto":"Factura","vencimiento":"2026-05-22","monto":86885},{"numero":"15058","docto":"Factura","vencimiento":"2026-05-26","monto":117082},{"numero":"15112","docto":"Factura","vencimiento":"2026-05-28","monto":165922}],"cliente_cerrado":false},
+  {"rut":"76939424-9","nombre":"INVICTUS TRIFORCE","vendedor":"Diego Muñoz","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":361325,"saldo":361325,"docs":[{"numero":"14767","docto":"Factura","vencimiento":"2026-05-15","monto":51},{"numero":"15120","docto":"Factura","vencimiento":"2026-05-28","monto":361274},{"numero":"15301","docto":"Factura","vencimiento":"2026-06-04","monto":207748},{"numero":"15421","docto":"Factura","vencimiento":"2026-06-09","monto":448699}],"cliente_cerrado":false},
+  {"rut":"14146205-9","nombre":"ANDRES LISBOA INOSTROZA","vendedor":"Diego Muñoz","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":2997,"saldo":2997,"docs":[{"numero":"15210","docto":"Factura","vencimiento":"2026-06-01","monto":216689},{"numero":"15413","docto":"Factura","vencimiento":"2026-06-09","monto":298270}],"cliente_cerrado":false},
+  {"rut":"17111584-1","nombre":"CAMILA ANDREA ESPINOZA","vendedor":"Diego Avaria","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":178964,"saldo":178964,"docs":[{"numero":"15454","docto":"Factura","vencimiento":"2026-06-03","monto":199993}],"cliente_cerrado":false},
+  {"rut":"19040890-6","nombre":"Wilcox Daniel Carrizo Cortes (NATHALY)","vendedor":"Diego Avaria","origen":"La Serena","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":84210,"saldo":84210,"docs":[{"numero":"15245","docto":"Factura","vencimiento":"2026-06-02","monto":84210}],"cliente_cerrado":false},
+  {"rut":"77272316-4","nombre":"CARNES LA ASADERIA LTDA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":2452749,"saldo":2452749,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":2452749}],"cliente_cerrado":false},
+  {"rut":"77893579-1","nombre":"P&V ASOCIADOS SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":1938735,"saldo":1938735,"docs":[{"numero":"1485","docto":"Factura","vencimiento":"2026-05-29","monto":363356}],"cliente_cerrado":false},
+  {"rut":"77346209-7","nombre":"GRUPO ISLA SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":943175,"saldo":943175,"docs":[{"numero":"1515","docto":"Factura","vencimiento":"2026-06-02","monto":372781},{"numero":"1520","docto":"Factura","vencimiento":"2026-06-03","monto":570394}],"cliente_cerrado":false},
+  {"rut":"77110387-1","nombre":"GIOIA SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":375806,"entre0_30":555612,"saldo":931418,"docs":[{"numero":"955","docto":"Factura","vencimiento":"2026-04-08","monto":278458},{"numero":"1355","docto":"Factura","vencimiento":"2026-06-03","monto":70021}],"cliente_cerrado":false},
+  {"rut":"76028956-6","nombre":"SERVICIOS TURISTICOS E INVERSIONES VIATORIS LTDA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":799108,"saldo":799108,"docs":[{"numero":"1472","docto":"Factura","vencimiento":"2026-05-20","monto":312468},{"numero":"1551","docto":"Factura","vencimiento":"2026-05-28","monto":486640},{"numero":"1614","docto":"Factura","vencimiento":"2026-06-03","monto":328889},{"numero":"1627","docto":"Factura","vencimiento":"2026-06-05","monto":205568}],"cliente_cerrado":false},
+  {"rut":"78114586-6","nombre":"CRIADERO Y SOCIEDAD GASTRONOMICA LA AUDILITA SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":605272,"entre31_60":0,"entre0_30":105128,"saldo":710400,"docs":[{"numero":"827","docto":"Factura","vencimiento":"2026-03-27","monto":184101},{"numero":"952","docto":"Factura","vencimiento":"2026-04-07","monto":421171},{"numero":"1497","docto":"Factura","vencimiento":"2026-05-30","monto":105128}],"cliente_cerrado":false},
+  {"rut":"76960533-9","nombre":"INVERSIONES Y GASTRONOMIA J & J LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":645408,"saldo":645408,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":645408}],"cliente_cerrado":false},
+  {"rut":"76380691-K","nombre":"INVERSIONES EL NUEVO IMPERIO LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":621418,"saldo":621418,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":621418}],"cliente_cerrado":false},
+  {"rut":"77593463-8","nombre":"PIZZERIA LA FORESTA SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":527749,"saldo":527749,"docs":[{"numero":"1585","docto":"Factura","vencimiento":"2026-05-26","monto":339685},{"numero":"1593","docto":"Factura","vencimiento":"2026-05-27","monto":97153},{"numero":"1668","docto":"Factura","vencimiento":"2026-06-05","monto":549308}],"cliente_cerrado":false},
+  {"rut":"77058119-2","nombre":"SOCIEDAD GASTRONOMICA V COSTA LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":507914,"saldo":507914,"docs":[{"numero":"1527","docto":"Factura","vencimiento":"2026-05-20","monto":246627},{"numero":"1576","docto":"Factura","vencimiento":"2026-06-09","monto":261287}],"cliente_cerrado":false},
+  {"rut":"77285876-0","nombre":"SOCIEDAD GASTRONOMICA LEON RETAMALES SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":499527,"saldo":499527,"docs":[{"numero":"1511","docto":"Factura","vencimiento":"2026-05-25","monto":499527}],"cliente_cerrado":false},
+  {"rut":"77868439-K","nombre":"OLMEDO Y LARA LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":445225,"saldo":445225,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":445225}],"cliente_cerrado":false},
+  {"rut":"76941465-7","nombre":"RESTAURANTE EME Y EME LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":398986,"saldo":398986,"docs":[{"numero":"1517","docto":"Factura","vencimiento":"2026-05-25","monto":135326},{"numero":"1519","docto":"Factura","vencimiento":"2026-05-26","monto":15881},{"numero":"1546","docto":"Factura","vencimiento":"2026-05-27","monto":20260},{"numero":"1575","docto":"Factura","vencimiento":"2026-06-01","monto":206897},{"numero":"1584","docto":"Factura","vencimiento":"2026-06-01","monto":20622},{"numero":"1641","docto":"Factura","vencimiento":"2026-06-09","monto":131089}],"cliente_cerrado":false},
+  {"rut":"76268096-3","nombre":"INVERSIONES EL IMPERIO LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":353359,"saldo":353359,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":353359}],"cliente_cerrado":false},
+  {"rut":"76251579-2","nombre":"SERVICIOS GASTRONOMICOS DEL MAR LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":352200,"saldo":352200,"docs":[{"numero":"1628","docto":"Factura","vencimiento":"2026-05-30","monto":206989},{"numero":"1633","docto":"Factura","vencimiento":"2026-06-02","monto":256635},{"numero":"1680","docto":"Factura","vencimiento":"2026-06-06","monto":230721}],"cliente_cerrado":false},
+  {"rut":"77320398-9","nombre":"IMPORTADORA OLIVO SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":332659,"saldo":332659,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":332659}],"cliente_cerrado":false},
+  {"rut":"76526826-5","nombre":"INVERSIONES TENICELA RENGIFO LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":292550,"saldo":292550,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":292550}],"cliente_cerrado":false},
+  {"rut":"78280967-9","nombre":"GMN INVERSIONES SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":292353,"saldo":292353,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":292353}],"cliente_cerrado":false},
+  {"rut":"78394466-9","nombre":"NEW CHICAGO SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":286194,"saldo":286194,"docs":[{"numero":"1657","docto":"Factura","vencimiento":"2026-06-03","monto":259345},{"numero":"1688","docto":"Factura","vencimiento":"2026-06-06","monto":166174}],"cliente_cerrado":false},
+  {"rut":"76734218-7","nombre":"SATIVO SPA (SEVERINO)","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":263123,"saldo":263123,"docs":[{"numero":"1535","docto":"Factura","vencimiento":"2026-05-20","monto":263123}],"cliente_cerrado":false},
+  {"rut":"12511343-5","nombre":"SOLANGE BELMAR HENRIQUEZ","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":235211,"saldo":235211,"docs":[{"numero":"1594","docto":"Factura","vencimiento":"2026-05-27","monto":219942},{"numero":"1595","docto":"Factura","vencimiento":"2026-05-27","monto":15269}],"cliente_cerrado":false},
+  {"rut":"76561374-4","nombre":"SOCIEDAD GASTRONOMICA LAS MARGARITAS","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":198904,"saldo":198904,"docs":[{"numero":"1589","docto":"Factura","vencimiento":"2026-05-26","monto":198904},{"numero":"1652","docto":"Factura","vencimiento":"2026-06-04","monto":149106}],"cliente_cerrado":false},
+  {"rut":"78031648-9","nombre":"SERVICIOS GASTRONOMICOS Y LITERARIOS DAMAFALDA LTDA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":195323,"saldo":195323,"docs":[{"numero":"1451","docto":"Factura","vencimiento":"2026-05-13","monto":82989},{"numero":"1521","docto":"Factura","vencimiento":"2026-05-20","monto":112334},{"numero":"1617","docto":"Factura","vencimiento":"2026-05-29","monto":40874},{"numero":"1640","docto":"Factura","vencimiento":"2026-06-03","monto":73656},{"numero":"1697","docto":"Factura","vencimiento":"2026-06-09","monto":79156}],"cliente_cerrado":false},
+  {"rut":"81899800-7","nombre":"PALACIOS Y BARBERIS LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":185416,"saldo":185416,"docs":[{"numero":"1648","docto":"Factura","vencimiento":"2026-06-03","monto":160331}],"cliente_cerrado":false},
+  {"rut":"77214472-5","nombre":"INVERSIONES GASTRONOMICAS RAF LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":174226,"entre0_30":0,"saldo":174226,"docs":[{"numero":"1096","docto":"Factura","vencimiento":"2026-04-21","monto":174226}],"cliente_cerrado":false},
+  {"rut":"77523850-K","nombre":"SOC COMERCIAL Y PRODUCTORA DE ALIMENTOS GOJE LTDA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":168353,"saldo":168353,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":168353}],"cliente_cerrado":false},
+  {"rut":"78121649-6","nombre":"JARDIN CERVECERO SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":160592,"saldo":160592,"docs":[{"numero":"1703","docto":"Factura","vencimiento":"2026-06-09","monto":104633}],"cliente_cerrado":false},
+  {"rut":"76732322-0","nombre":"COMERCIAL NORPONIENTE SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":149940,"saldo":149940,"docs":[{"numero":"1588","docto":"Factura","vencimiento":"2026-06-09","monto":149940}],"cliente_cerrado":false},
+  {"rut":"7636424-9","nombre":"HECTOR EDUARDO PELAYES VELASQUEZ","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":144556,"saldo":144556,"docs":[{"numero":"1630","docto":"Factura","vencimiento":"2026-05-30","monto":141517},{"numero":"1645","docto":"Factura","vencimiento":"2026-06-03","monto":164433}],"cliente_cerrado":false},
+  {"rut":"77306873-9","nombre":"RESTAURANTES ORIENTE LIMITADA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":92582,"saldo":92582,"docs":[{"numero":"1574","docto":"Factura","vencimiento":"2026-06-01","monto":92582}],"cliente_cerrado":false},
+  {"rut":"78159643-4","nombre":"SANTA LUZ SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":79825,"saldo":79825,"docs":[{"numero":"1587","docto":"Factura","vencimiento":"2026-06-01","monto":79825}],"cliente_cerrado":false},
+  {"rut":"77211506-7","nombre":"SWISSCAFE SPA (CLARA EIRL)","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":76321,"saldo":76321,"docs":[{"numero":"1463","docto":"Factura","vencimiento":"2026-05-14","monto":76321}],"cliente_cerrado":false},
+  {"rut":"77081910-5","nombre":"SUPERMERCADO DON HOMERO SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":66189,"saldo":66189,"docs":[{"numero":"1662","docto":"Factura","vencimiento":"2026-06-04","monto":64442}],"cliente_cerrado":false},
+  {"rut":"77846459-4","nombre":"AGENCIA DIGITAL GRACIA STORE SPA","vendedor":"Yanela","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":59914,"saldo":59914,"docs":[{"numero":"1620","docto":"Factura","vencimiento":"2026-05-29","monto":89877}],"cliente_cerrado":false},
+  {"rut":"78268704-2","nombre":"KARNAL SPA","vendedor":"Nicolas","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":3062514,"entre0_30":2747170,"saldo":5809684,"docs":[{"numero":"1150","docto":"Factura","vencimiento":"2026-04-24","monto":29969},{"numero":"1154","docto":"Factura","vencimiento":"2026-04-25","monto":13457},{"numero":"1155","docto":"Factura","vencimiento":"2026-04-25","monto":31912},{"numero":"1156","docto":"Factura","vencimiento":"2026-04-25","monto":23097},{"numero":"1157","docto":"Factura","vencimiento":"2026-04-25","monto":32144},{"numero":"1159","docto":"Factura","vencimiento":"2026-04-25","monto":29129},{"numero":"1160","docto":"Factura","vencimiento":"2026-04-25","monto":19919},{"numero":"1161","docto":"Factura","vencimiento":"2026-04-25","monto":35331},{"numero":"1162","docto":"Factura","vencimiento":"2026-04-25","monto":18419},{"numero":"1163","docto":"Factura","vencimiento":"2026-04-25","monto":64519},{"numero":"1165","docto":"Factura","vencimiento":"2026-04-25","monto":46208},{"numero":"1166","docto":"Factura","vencimiento":"2026-04-25","monto":125275},{"numero":"1167","docto":"Factura","vencimiento":"2026-04-25","monto":69702},{"numero":"1168","docto":"Factura","vencimiento":"2026-04-25","monto":39131},{"numero":"1169","docto":"Factura","vencimiento":"2026-04-25","monto":21758},{"numero":"1170","docto":"Factura","vencimiento":"2026-04-25","monto":3871},{"numero":"1171","docto":"Factura","vencimiento":"2026-04-25","monto":3951},{"numero":"1172","docto":"Factura","vencimiento":"2026-04-27","monto":47300},{"numero":"1173","docto":"Factura","vencimiento":"2026-04-27","monto":35237},{"numero":"1174","docto":"Factura","vencimiento":"2026-04-27","monto":33794},{"numero":"1175","docto":"Factura","vencimiento":"2026-04-27","monto":31510},{"numero":"1183","docto":"Factura","vencimiento":"2026-04-27","monto":50038},{"numero":"1193","docto":"Factura","vencimiento":"2026-04-28","monto":81125},{"numero":"1194","docto":"Factura","vencimiento":"2026-04-28","monto":23957},{"numero":"1195","docto":"Factura","vencimiento":"2026-04-28","monto":20583},{"numero":"1196","docto":"Factura","vencimiento":"2026-04-28","monto":37969},{"numero":"1197","docto":"Factura","vencimiento":"2026-04-28","monto":28364},{"numero":"1198","docto":"Factura","vencimiento":"2026-04-28","monto":2518},{"numero":"1199","docto":"Factura","vencimiento":"2026-04-28","monto":37921},{"numero":"1200","docto":"Factura","vencimiento":"2026-04-28","monto":47342},{"numero":"1209","docto":"Factura","vencimiento":"2026-04-29","monto":28267},{"numero":"1210","docto":"Factura","vencimiento":"2026-04-29","monto":23342},{"numero":"1211","docto":"Factura","vencimiento":"2026-04-29","monto":23212},{"numero":"1212","docto":"Factura","vencimiento":"2026-04-29","monto":102301},{"numero":"1213","docto":"Factura","vencimiento":"2026-04-29","monto":17574},{"numero":"1214","docto":"Factura","vencimiento":"2026-04-29","monto":67512},{"numero":"1216","docto":"Factura","vencimiento":"2026-04-29","monto":48910},{"numero":"1223","docto":"Factura","vencimiento":"2026-04-30","monto":46674},{"numero":"1224","docto":"Factura","vencimiento":"2026-04-30","monto":56771},{"numero":"1225","docto":"Factura","vencimiento":"2026-04-30","monto":20188},{"numero":"1233","docto":"Factura","vencimiento":"2026-05-01","monto":20898},{"numero":"1234","docto":"Factura","vencimiento":"2026-05-01","monto":60175},{"numero":"1235","docto":"Factura","vencimiento":"2026-05-01","monto":32055},{"numero":"1236","docto":"Factura","vencimiento":"2026-05-01","monto":61782},{"numero":"1237","docto":"Factura","vencimiento":"2026-05-01","monto":20850},{"numero":"1247","docto":"Factura","vencimiento":"2026-05-02","monto":84350},{"numero":"1248","docto":"Factura","vencimiento":"2026-05-02","monto":41367},{"numero":"1249","docto":"Factura","vencimiento":"2026-05-02","monto":29025},{"numero":"1250","docto":"Factura","vencimiento":"2026-05-02","monto":79160},{"numero":"1251","docto":"Factura","vencimiento":"2026-05-02","monto":43349},{"numero":"1253","docto":"Factura","vencimiento":"2026-05-04","monto":21327},{"numero":"1254","docto":"Factura","vencimiento":"2026-05-04","monto":28134},{"numero":"1256","docto":"Factura","vencimiento":"2026-05-04","monto":81779},{"numero":"1257","docto":"Factura","vencimiento":"2026-05-04","monto":27258},{"numero":"1258","docto":"Factura","vencimiento":"2026-05-04","monto":42465},{"numero":"1274","docto":"Factura","vencimiento":"2026-05-05","monto":43909},{"numero":"1300","docto":"Factura","vencimiento":"2026-05-06","monto":38702},{"numero":"1301","docto":"Factura","vencimiento":"2026-05-06","monto":24314},{"numero":"1302","docto":"Factura","vencimiento":"2026-05-06","monto":34819},{"numero":"1303","docto":"Factura","vencimiento":"2026-05-06","monto":26702},{"numero":"1322","docto":"Factura","vencimiento":"2026-05-07","monto":38253},{"numero":"1323","docto":"Factura","vencimiento":"2026-05-07","monto":31188},{"numero":"1324","docto":"Factura","vencimiento":"2026-05-07","monto":38577},{"numero":"1325","docto":"Factura","vencimiento":"2026-05-07","monto":46011},{"numero":"1326","docto":"Factura","vencimiento":"2026-05-07","monto":30270},{"numero":"1327","docto":"Factura","vencimiento":"2026-05-07","monto":52749},{"numero":"1328","docto":"Factura","vencimiento":"2026-05-07","monto":68452},{"numero":"1329","docto":"Factura","vencimiento":"2026-05-07","monto":31806},{"numero":"1330","docto":"Factura","vencimiento":"2026-05-07","monto":30045},{"numero":"1331","docto":"Factura","vencimiento":"2026-05-07","monto":51778},{"numero":"1332","docto":"Factura","vencimiento":"2026-05-07","monto":61569},{"numero":"1333","docto":"Factura","vencimiento":"2026-05-07","monto":58497},{"numero":"1334","docto":"Factura","vencimiento":"2026-05-07","monto":160698},{"numero":"1337","docto":"Factura","vencimiento":"2026-05-09","monto":18584},{"numero":"1338","docto":"Factura","vencimiento":"2026-05-09","monto":50128},{"numero":"1339","docto":"Factura","vencimiento":"2026-05-09","monto":31211},{"numero":"1342","docto":"Factura","vencimiento":"2026-05-09","monto":25893},{"numero":"1345","docto":"Factura","vencimiento":"2026-05-11","monto":28786},{"numero":"1346","docto":"Factura","vencimiento":"2026-05-11","monto":42170},{"numero":"1347","docto":"Factura","vencimiento":"2026-05-11","monto":4327},{"numero":"1348","docto":"Factura","vencimiento":"2026-05-11","monto":23725},{"numero":"1349","docto":"Factura","vencimiento":"2026-05-11","monto":25033},{"numero":"1353","docto":"Factura","vencimiento":"2026-05-11","monto":12521},{"numero":"1364","docto":"Factura","vencimiento":"2026-05-12","monto":26845},{"numero":"1365","docto":"Factura","vencimiento":"2026-05-12","monto":42100},{"numero":"1366","docto":"Factura","vencimiento":"2026-05-12","monto":42783},{"numero":"1367","docto":"Factura","vencimiento":"2026-05-12","monto":61555},{"numero":"1368","docto":"Factura","vencimiento":"2026-05-12","monto":36966},{"numero":"1369","docto":"Factura","vencimiento":"2026-05-12","monto":98511},{"numero":"1370","docto":"Factura","vencimiento":"2026-05-12","monto":25919},{"numero":"1379","docto":"Factura","vencimiento":"2026-05-13","monto":40327},{"numero":"1380","docto":"Factura","vencimiento":"2026-05-13","monto":31381},{"numero":"1381","docto":"Factura","vencimiento":"2026-05-13","monto":68594},{"numero":"1382","docto":"Factura","vencimiento":"2026-05-13","monto":41680},{"numero":"1383","docto":"Factura","vencimiento":"2026-05-13","monto":38801},{"numero":"1384","docto":"Factura","vencimiento":"2026-05-13","monto":47363},{"numero":"1386","docto":"Factura","vencimiento":"2026-05-13","monto":57636},{"numero":"1392","docto":"Factura","vencimiento":"2026-05-14","monto":55585},{"numero":"1393","docto":"Factura","vencimiento":"2026-05-14","monto":32657},{"numero":"1394","docto":"Factura","vencimiento":"2026-05-14","monto":35495},{"numero":"1395","docto":"Factura","vencimiento":"2026-05-14","monto":25928},{"numero":"1396","docto":"Factura","vencimiento":"2026-05-14","monto":42055},{"numero":"1397","docto":"Factura","vencimiento":"2026-05-14","monto":30180},{"numero":"1401","docto":"Factura","vencimiento":"2026-05-14","monto":43684},{"numero":"1412","docto":"Factura","vencimiento":"2026-05-15","monto":77436},{"numero":"1419","docto":"Factura","vencimiento":"2026-05-15","monto":28190},{"numero":"1422","docto":"Factura","vencimiento":"2026-05-15","monto":24051},{"numero":"1427","docto":"Factura","vencimiento":"2026-05-16","monto":39221},{"numero":"1428","docto":"Factura","vencimiento":"2026-05-16","monto":40009},{"numero":"1429","docto":"Factura","vencimiento":"2026-05-16","monto":148444},{"numero":"1430","docto":"Factura","vencimiento":"2026-05-16","monto":93544},{"numero":"1432","docto":"Factura","vencimiento":"2026-05-16","monto":45659},{"numero":"1433","docto":"Factura","vencimiento":"2026-05-16","monto":63112},{"numero":"1434","docto":"Factura","vencimiento":"2026-05-16","monto":40528},{"numero":"1436","docto":"Factura","vencimiento":"2026-05-16","monto":84331},{"numero":"1443","docto":"Factura","vencimiento":"2026-05-18","monto":45758},{"numero":"1446","docto":"Factura","vencimiento":"2026-05-18","monto":156849},{"numero":"1455","docto":"Factura","vencimiento":"2026-05-19","monto":25850},{"numero":"1460","docto":"Factura","vencimiento":"2026-05-19","monto":124983},{"numero":"1466","docto":"Factura","vencimiento":"2026-05-20","monto":35923},{"numero":"1467","docto":"Factura","vencimiento":"2026-05-20","monto":25506},{"numero":"1468","docto":"Factura","vencimiento":"2026-05-20","monto":28734},{"numero":"1469","docto":"Factura","vencimiento":"2026-05-20","monto":28671},{"numero":"1470","docto":"Factura","vencimiento":"2026-05-20","monto":42617},{"numero":"1471","docto":"Factura","vencimiento":"2026-05-20","monto":46884},{"numero":"1480","docto":"Factura","vencimiento":"2026-05-21","monto":12897},{"numero":"1481","docto":"Factura","vencimiento":"2026-05-21","monto":18446},{"numero":"1482","docto":"Factura","vencimiento":"2026-05-21","monto":31952},{"numero":"1489","docto":"Factura","vencimiento":"2026-05-22","monto":30720},{"numero":"1490","docto":"Factura","vencimiento":"2026-05-22","monto":23203},{"numero":"1491","docto":"Factura","vencimiento":"2026-05-22","monto":116001},{"numero":"1496","docto":"Factura","vencimiento":"2026-05-22","monto":2791},{"numero":"1501","docto":"Factura","vencimiento":"2026-05-23","monto":18986},{"numero":"1502","docto":"Factura","vencimiento":"2026-05-23","monto":37605},{"numero":"1503","docto":"Factura","vencimiento":"2026-05-23","monto":19576},{"numero":"1560","docto":"Factura","vencimiento":"2026-05-29","monto":270}],"cliente_cerrado":false},
+  {"rut":"81815900-5","nombre":"CUERPO DE BOMBEROS DE VIÑA DEL MAR","vendedor":"Nicolas","origen":"Concón","mayor90":64086,"entre61_90":0,"entre31_60":0,"entre0_30":0,"saldo":64086,"docs":[{"numero":"406","docto":"Factura","vencimiento":"2026-02-05","monto":64086}],"cliente_cerrado":false},
+  {"rut":"18568128-9","nombre":"CRISTIAN MAURICIO ALFARO OYARZUN","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":845696,"saldo":845696,"docs":[{"numero":"1566","docto":"Factura","vencimiento":"2026-06-01","monto":655235},{"numero":"1591","docto":"Factura","vencimiento":"2026-06-01","monto":190461},{"numero":"1647","docto":"Factura","vencimiento":"2026-06-09","monto":893190}],"cliente_cerrado":false},
+  {"rut":"78234324-6","nombre":"RAIZ CHILENA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":2,"entre31_60":0,"entre0_30":637577,"saldo":637579,"docs":[{"numero":"935","docto":"Factura","vencimiento":"2026-04-06","monto":2},{"numero":"1507","docto":"Factura","vencimiento":"2026-05-25","monto":224847},{"numero":"1571","docto":"Factura","vencimiento":"2026-06-01","monto":412730}],"cliente_cerrado":false},
+  {"rut":"78354088-6","nombre":"CASA BARON SPA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":534358,"entre31_60":0,"entre0_30":0,"saldo":534358,"docs":[{"numero":"828","docto":"Factura","vencimiento":"2026-03-27","monto":534358}],"cliente_cerrado":false},
+  {"rut":"77952671-2","nombre":"RESTAURANT EUGENIA IRIS LAGOS MARCHANT","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":404780,"saldo":404780,"docs":[{"numero":"1700","docto":"Factura","vencimiento":"2026-06-08","monto":90469}],"cliente_cerrado":false},
+  {"rut":"27744624-3","nombre":"FANI MARIELA HERNANDEZ NEIRA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":375175,"saldo":375175,"docs":[{"numero":"1567","docto":"Factura","vencimiento":"2026-05-25","monto":375175},{"numero":"1634","docto":"Factura","vencimiento":"2026-06-01","monto":213540}],"cliente_cerrado":false},
+  {"rut":"77815567-2","nombre":"INVERSIONES RIVAS SPA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":335823,"saldo":335823,"docs":[{"numero":"1569","docto":"Factura","vencimiento":"2026-05-25","monto":335823},{"numero":"1629","docto":"Factura","vencimiento":"2026-05-29","monto":375629},{"numero":"1699","docto":"Factura","vencimiento":"2026-06-08","monto":347183}],"cliente_cerrado":false},
+  {"rut":"76555335-0","nombre":"ERAZO & FORTUNATO LIMITADA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":314046,"saldo":314046,"docs":[{"numero":"1539","docto":"Factura","vencimiento":"2026-05-27","monto":314046}],"cliente_cerrado":false},
+  {"rut":"14638900-7","nombre":"CARLOS RAUL MENA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":298143,"saldo":298143,"docs":[{"numero":"1586","docto":"Factura","vencimiento":"2026-05-25","monto":298143}],"cliente_cerrado":false},
+  {"rut":"77095680-3","nombre":"SERVICIOS GASTRONOMICOS PORTOFINO LIMITADA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":144238,"saldo":144238,"docs":[{"numero":"1596","docto":"Factura","vencimiento":"2026-06-02","monto":144238}],"cliente_cerrado":false},
+  {"rut":"78305235-0","nombre":"CHARCUTERIA Y EVENTOS RENE OLIVERA E.I.R.L","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":98838,"saldo":98838,"docs":[{"numero":"1568","docto":"Factura","vencimiento":"2026-06-01","monto":98838}],"cliente_cerrado":false},
+  {"rut":"77981013-5","nombre":"COCINA CENTRAL SPA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":3000,"entre0_30":91371,"saldo":94371,"docs":[{"numero":"1085","docto":"Factura","vencimiento":"2026-04-20","monto":3000},{"numero":"1565","docto":"Factura","vencimiento":"2026-06-01","monto":91371}],"cliente_cerrado":false},
+  {"rut":"77807841-4","nombre":"PUERTO QUERIDO SPA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":4215,"entre31_60":0,"entre0_30":0,"saldo":4215,"docs":[{"numero":"894","docto":"Factura","vencimiento":"2026-04-02","monto":4215}],"cliente_cerrado":false},
+  {"rut":"77571874-9","nombre":"SOCIEDAD GASTRONOMICA POMARUS SPA","vendedor":"Jordy","origen":"Concón","mayor90":0,"entre61_90":1783,"entre31_60":0,"entre0_30":0,"saldo":1783,"docs":[{"numero":"763","docto":"Factura","vencimiento":"2026-03-23","monto":1783}],"cliente_cerrado":false},
+  {"rut":"76574045-2","nombre":"SAN MARINOS SPA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":833607,"saldo":833607,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":833607}],"cliente_cerrado":false},
+  {"rut":"76382801-8","nombre":"SOCIEDAD GASTRONOMICA BRASAS DEL SUR LIMITADA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":363387,"entre0_30":0,"saldo":363387,"docs":[{"numero":"1602","docto":"Factura","vencimiento":"2026-06-02","monto":326728}],"cliente_cerrado":false},
+  {"rut":"77715151-7","nombre":"INVERSIONES W.R. SPA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":333202,"saldo":333202,"docs":[{"numero":"1637","docto":"Factura","vencimiento":"2026-06-09","monto":198250},{"numero":"1646","docto":"Factura","vencimiento":"2026-06-09","monto":9518}],"cliente_cerrado":false},
+  {"rut":"8162912-9","nombre":"NELLY FLORES GONZALEZ","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":224804,"saldo":224804,"docs":[{"numero":"1474","docto":"Factura","vencimiento":"2026-05-20","monto":93616}],"cliente_cerrado":false},
+  {"rut":"76919007-4","nombre":"VESTUARIOS DANIELA MILIXA ESTAY CABRERA E.I.R.L","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":191397,"saldo":191397,"docs":[{"numero":"1621","docto":"Factura","vencimiento":"2026-06-04","monto":96260}],"cliente_cerrado":false},
+  {"rut":"77975380-8","nombre":"NAFTIKOS GENERAL SHIPÂ S SUPPLIER SPA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":184137,"saldo":184137,"docs":[{"numero":"1426","docto":"Factura","vencimiento":"2026-06-08","monto":184137}],"cliente_cerrado":false},
+  {"rut":"77811546-8","nombre":"CUCHIPANDA SPA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":82417,"saldo":82417,"docs":[{"numero":"1573","docto":"Factura","vencimiento":"2026-06-01","monto":3}],"cliente_cerrado":false},
+  {"rut":"77756868-K","nombre":"NONITO LA DESPENSA LIMITADA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":71429,"saldo":71429,"docs":[{"numero":"–","docto":"Factura","vencimiento":"2026-05-25","monto":71429}],"cliente_cerrado":false},
+  {"rut":"77959532-3","nombre":"INVERSIONES MARGA MARGA SPA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":60690,"saldo":60690,"docs":[{"numero":"1638","docto":"Factura","vencimiento":"2026-06-02","monto":60791},{"numero":"1673","docto":"Factura","vencimiento":"2026-06-04","monto":60690}],"cliente_cerrado":false},
+  {"rut":"77750627-7","nombre":"RESTAURANT Y CAFETERIA TERRAZA 7 SPA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":0,"entre0_30":56793,"saldo":56793,"docs":[{"numero":"1644","docto":"Factura","vencimiento":"2026-06-02","monto":79361},{"numero":"1681","docto":"Factura","vencimiento":"2026-06-05","monto":60500}],"cliente_cerrado":false},
+  {"rut":"77174199-1","nombre":"LA COFRADIA","vendedor":"Valeria","origen":"Concón","mayor90":0,"entre61_90":0,"entre31_60":9,"entre0_30":0,"saldo":9,"docs":[{"numero":"1205","docto":"Factura","vencimiento":"2026-04-28","monto":9}],"cliente_cerrado":false}
+];
+
+
+const FECHA_CONTROL = new Date('2026-06-08');
+
+const fmt = n => '$' + Math.round(n).toLocaleString('es-CL');
+const fmtShort = n => {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + Math.round(n);
+};
+const estadoLabel = e => ({pendiente: 'Pendiente', contactado: 'Contactado', agendado: 'Agendado', en_pago: 'En pago', pagado: 'Pagado', sin_contacto: 'Sin contacto'})[e] || e;
+
+// Clasificar cliente por plazo
+function getPlazoGrupo(c) {
+  if (c.tipo_politica === 'contado') return 'contado';
+  if (c.tipo_politica === 'sin_politica') return 'sin_politica';
+  if (c.plazo_dias === 7) return '7d';
+  if (c.plazo_dias === 15) return '15d';
+  if (c.plazo_dias === 30) return '30d';
+  return 'sin_politica';
+}
+
+function getPlazoLabel(c) {
+  const g = getPlazoGrupo(c);
+  return {contado: 'Contado', '7d': '7d', '15d': '15d', '30d': '30d', sin_politica: 'Sin política'}[g];
+}
+function getPlazoClass(c) {
+  const g = getPlazoGrupo(c);
+  return {contado: 'plazo-contado', '7d': 'plazo-7', '15d': 'plazo-15', '30d': 'plazo-30', sin_politica: 'plazo-sin'}[g];
+}
+
+// Moroso = saldo vencido más de 30 días
+function esMoroso(c) {
+  return (c.mayor90 + c.entre61_90 + c.entre31_60) > 0;
+}
+
+function parseVenc(s) {
+  if (!s) return null;
+  // Formato dd/mm/yyyy o dd-mm-yyyy
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if (m) {
+    const yr = parseInt(m[3]);
+    const fullYear = yr < 100 ? 2000 + yr : yr;
+    return new Date(fullYear, parseInt(m[2]) - 1, parseInt(m[1]));
+  }
+  // Formato yyyy-mm-dd (ISO)
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) {
+    return new Date(parseInt(iso[1]), parseInt(iso[2]) - 1, parseInt(iso[3]));
+  }
+  return null;
+}
+
+function fmtDate(s) { if (!s) return ''; const p = s.split('-'); return p.length===3 ? p[2]+'-'+p[1]+'-'+p[0] : s; }
+
+function diasVencidosMax(c) {
+  if (!c.docs || c.docs.length === 0) return 0;
+  let maxDias = 0;
+  c.docs.forEach(d => {
+    const f = parseVenc(d.vencimiento);
+    if (f) {
+      const dias = Math.floor((FECHA_CONTROL - f) / (1000 * 60 * 60 * 24));
+      if (dias > maxDias) maxDias = dias;
+    }
+  });
+  return maxDias;
+}
+
+// === SEMÁFORO POR FECHA DE VENCIMIENTO ===
+// 🔴 ROJO: ya venció
+// 🟡 AMARILLO: vence hoy o mañana
+// 🟢 VERDE: vence en 2+ días
+function getSemaforoDoc(doc) {
+  const f = parseVenc(doc.vencimiento);
+  if (!f) return { color: 'gris', label: '—', dias: null };
+  const hoy = new Date();
+  hoy.setHours(0,0,0,0);
+  const dias = Math.floor((f - hoy) / (1000 * 60 * 60 * 24));
+  if (dias < 0) {
+    // Vencido — intensidad según antigüedad
+    let intensidad;
+    const venc = -dias;
+    if (venc <= 7) intensidad = 'rojo1';
+    else if (venc <= 30) intensidad = 'rojo2';
+    else if (venc <= 60) intensidad = 'rojo3';
+    else if (venc <= 90) intensidad = 'rojo4';
+    else intensidad = 'rojo5';
+    return { color: intensidad, label: 'Vencido hace ' + venc + 'd', dias: dias };
+  } else if (dias <= 1) {
+    return { color: 'amarillo', label: dias === 0 ? 'Vence HOY' : 'Vence mañana', dias: dias };
+  } else {
+    return { color: 'verde', label: 'En ' + dias + 'd', dias: dias };
+  }
+}
+
+// Semáforo principal del cliente (el peor de sus docs)
+function getSemaforoCliente(c) {
+  if (!c.docs || c.docs.length === 0) return { color: 'gris', label: 'Sin docs', dias: null };
+  let peor = null;
+  c.docs.forEach(d => {
+    const s = getSemaforoDoc(d);
+    if (s.dias === null) return;
+    if (!peor || s.dias < peor.dias) peor = s;
+  });
+  return peor || { color: 'gris', label: '—', dias: null };
+}
+
+
+// ── FIREBASE ──────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBU6joCTAWlz-CT1Zb50A09KGTUYO-C9DU",
+  authDomain: "cobranzatoro-46a65.firebaseapp.com",
+  databaseURL: "https://cobranzatoro-46a65-default-rtdb.firebaseio.com",
+  projectId: "cobranzatoro-46a65",
+  storageBucket: "cobranzatoro-46a65.firebasestorage.app",
+  messagingSenderId: "657066551213",
+  appId: "1:657066551213:web:756917d1e9a5f6b1d6a324"
+};
+let db = null;
+try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) { console.warn('Firebase no disponible:', e); }
+
+// ── LOGIN ──────────────────────────────────────────────────────────────────
+let currentUser = null;
+let esMaestro = false;
+
+function togglePinField() {
+  const sel = document.getElementById('login-select').value;
+  const pinField = document.getElementById('pin-field');
+  const pinInput = document.getElementById('login-pin');
+  const pinError = document.getElementById('pin-error');
+  if (sel === 'Nicolas') {
+    pinField.style.display = 'block';
+    pinInput.value = '';
+    if (pinError) pinError.style.display = 'none';
+    setTimeout(() => pinInput.focus(), 50);
+  } else {
+    pinField.style.display = 'none';
+    if (pinError) pinError.style.display = 'none';
+  }
+}
+
+function doLogin() {
+  try {
+    const sel = document.getElementById('login-select').value;
+    if (!sel) { document.getElementById('login-select').style.borderColor='#D32027'; return; }
+    // Validar PIN si es Nicolás
+    if (sel === 'Nicolas') {
+      const pinInput = document.getElementById('login-pin');
+      const pinError = document.getElementById('pin-error');
+      const pinVal = pinInput ? pinInput.value.trim() : '';
+      if (pinVal !== '0703') {
+        if (pinInput) { pinInput.style.borderColor='#D32027'; pinInput.value=''; pinInput.focus(); }
+        if (pinError) pinError.style.display = 'block';
+        return;
+      }
+      if (pinError) pinError.style.display = 'none';
+    }
+    // 1. Hide overlay immediately
+    document.getElementById('login-overlay').style.display = 'none';
+    // 2. Set user
+    currentUser = sel;
+    esMaestro = (sel === 'Nicolas');
+    // 3. Show badge
+    const badge = document.getElementById('usuario-badge');
+    if (badge) { badge.textContent = sel + (esMaestro ? ' 👑' : ''); badge.style.display = 'inline-block'; }
+    // 4. Show master-only buttons
+    if (esMaestro) {
+      ['btn-respaldar','btn-importar','btn-csv'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='inline-block'; });
+    }
+    // 5. Filter vendor tabs for non-master
+    if (!esMaestro) {
+      document.querySelectorAll('#vend-tabs button').forEach(btn => {
+        if (btn.dataset.v !== 'all' && btn.dataset.v !== currentUser) btn.style.display='none';
+      });
+      const vBtn = document.querySelector('#vend-tabs button[data-v="' + currentUser + '"]');
+      if (vBtn) state.vendor = currentUser;
+    }
+    // 6. Start Firebase sync + render
+    if (db) {
+      db.ref('comentarios').on('value', snap => {
+        comentarios = snap.val() || {};
+        renderTable(); renderAcuerdos();
+      });
+    } else {
+      try { const r = localStorage.getItem('cobranza_v2'); if (r) comentarios = JSON.parse(r); } catch(e) {}
+    }
+    renderAll();
+  } catch(err) {
+    alert('Error al entrar: ' + err.message);
+  }
+}
+
+// ── COMENTARIOS ────────────────────────────────────────────────────────────
+let comentarios = {};
+function loadComentarios() { try { const r = localStorage.getItem('cobranza_v2'); if (r) comentarios = JSON.parse(r); } catch(e) {} }
+function saveComentarios() { if (!db) { try { localStorage.setItem('cobranza_v2', JSON.stringify(comentarios)); } catch(e) {} } }
+function getComentario(rut) { return comentarios[rut] || { fecha_reunion: '', estado: '', comentario: '', actualizado: '' }; }
+function setComentario(rut, datos) {
+  if (!datos.fecha_reunion && !datos.estado && !datos.comentario) {
+    delete comentarios[rut];
+    if (db) db.ref('comentarios/' + rut).remove(); else saveComentarios();
+  } else {
+    comentarios[rut] = { ...datos, actualizado: new Date().toISOString(), vendedor: currentUser || '' };
+    if (db) db.ref('comentarios/' + rut).set(comentarios[rut]); else saveComentarios();
+  }
+}
+
+let state = { vendor: 'all', sucursal: 'all', search: '', estado: 'all', sort: 'urgencia', excluirCerrado: true, plazo: 'all', soloMorosos: false, conComentario: false };
+const isSinAsignar = (v) => !v || v === 'Sin vendedor' || v === 'SIN ASIGNAR' || v === '';
+const baseFiltered = () => {
+  let base = (!esMaestro && currentUser)
+    ? data.filter(r => r.vendedor === currentUser || isSinAsignar(r.vendedor))
+    : data;
+  return state.excluirCerrado ? base.filter(r => !r.cliente_cerrado) : base;
+};
+
+function renderPlazoCards() {
+  const d = baseFiltered();
+  const grupos = { contado: [], '7d': [], '15d': [], '30d': [], sin_politica: [] };
+  d.forEach(r => { grupos[getPlazoGrupo(r)].push(r); });
+  const morosos = d.filter(esMoroso);
+
+  const cards = [
+    { key: 'contado', label: '💵 Contado', sub: 'NO deberían tener saldo', cls: 'pcard-contado' },
+    { key: '7d', label: '📅 7 días', sub: 'Crédito corto', cls: 'pcard-7d' },
+    { key: '15d', label: '📅 15 días', sub: 'Crédito medio', cls: 'pcard-15d' },
+    { key: '30d', label: '📅 30 días', sub: 'Crédito largo', cls: 'pcard-30d' },
+    { key: 'sin_politica', label: '⚠ Sin política', sub: 'Falta definir', cls: 'pcard-sin' }
+  ];
+
+  let html = cards.map(card => {
+    const g = grupos[card.key];
+    const saldo = g.reduce((a,b) => a+b.saldo, 0);
+    const moros = g.filter(esMoroso).length;
+    return `<div class="pcard ${card.cls} ${state.plazo===card.key?'active':''}" data-p="${card.key}">
+      <p class="pcard-label">${card.label}</p>
+      <p class="pcard-value">${fmtShort(saldo)}</p>
+      <p class="pcard-sub">${g.length} clientes</p>
+      ${moros > 0 ? '<p class="pcard-moroso-flag">⚠ ' + moros + ' moroso' + (moros>1?'s':'') + '</p>' : '<p class="pcard-sub">' + card.sub + '</p>'}
+    </div>`;
+  }).join('');
+
+  // Card adicional de morosos (transversal)
+  html += `<div class="pcard pcard-moroso ${state.soloMorosos?'active':''}" id="card-morosos">
+    <p class="pcard-label">⚠ Solo morosos</p>
+    <p class="pcard-value">${fmtShort(morosos.reduce((a,b)=>a+b.saldo,0))}</p>
+    <p class="pcard-sub">${morosos.length} clientes</p>
+    <p class="pcard-moroso-flag">+30d vencidos</p>
+  </div>`;
+
+  document.getElementById('plazo-cards').innerHTML = html;
+
+  document.querySelectorAll('.pcard[data-p]').forEach(c => c.addEventListener('click', () => {
+    state.plazo = state.plazo === c.dataset.p ? 'all' : c.dataset.p;
+    renderAll();
+  }));
+  document.getElementById('card-morosos').addEventListener('click', () => {
+    state.soloMorosos = !state.soloMorosos;
+    document.getElementById('solo-morosos').checked = state.soloMorosos;
+    renderAll();
+  });
+}
+
+function renderVendedorResumen() {
+  const vendColors = {
+    'Javiera':'#7c3aed','Nicolas':'#0369a1','Gonzalo':'#0f766e','Diego Muñoz':'#b45309',
+    'Diego Avaria':'#be185d','Yanela':'#6d28d9','Jordy':'#0e7490','Valeria':'#b91c1c',
+    'Local':'#6b7280','Sin vendedor':'#9ca3af','SIN ASIGNAR':'#9ca3af'
+  };
+  const base = baseFiltered().filter(r => r.canal !== 'RETAIL');
+  const d = state.sucursal !== 'all' ? base.filter(r => r.origen === state.sucursal) : base;
+
+  const vendMap = {};
+  d.forEach(r => {
+    if (!vendMap[r.vendedor]) vendMap[r.vendedor] = { clientes: [], saldo: 0, morosos: 0 };
+    vendMap[r.vendedor].clientes.push(r);
+    vendMap[r.vendedor].saldo += r.saldo;
+    if (esMoroso(r)) vendMap[r.vendedor].morosos++;
+  });
+
+  let html = Object.entries(vendMap)
+    .sort((a,b) => b[1].saldo - a[1].saldo)
+    .map(([vend, info]) => {
+      const color = vendColors[vend] || '#374151';
+      const active = state.vendor === vend;
+      const pct = d.length ? Math.round(info.clientes.length / d.length * 100) : 0;
+      return `<div class="pcard pcard-vsum ${active ? 'active' : ''}" data-vend="${vend}" style="border-left: 4px solid ${color}; cursor:pointer;" title="Click para filtrar por ${vend}">
+        <p class="pcard-label" style="color:${color};">👤 ${vend}</p>
+        <p class="pcard-value">${fmtShort(info.saldo)}</p>
+        <p class="pcard-sub">${info.clientes.length} clientes (${pct}%)${info.morosos > 0 ? ' &nbsp;·&nbsp; <span style="color:#D32027;font-weight:600;">⚠ ' + info.morosos + '</span>' : ''}</p>
+      </div>`;
+    }).join('');
+
+  document.getElementById('vendor-resumen').innerHTML = html;
+
+  document.querySelectorAll('.pcard-vsum').forEach(c => c.addEventListener('click', () => {
+    state.vendor = state.vendor === c.dataset.vend ? 'all' : c.dataset.vend;
+    const sel = document.getElementById('filtro-vendor');
+    if (sel) sel.value = state.vendor;
+    renderAll();
+  }));
+}
+
+function renderTabs() {
+  const d = baseFiltered();
+  const sucs = {};
+  d.forEach(r => { sucs[r.origen] = (sucs[r.origen] || 0) + r.saldo; });
+  let sHtml = `<button class="tab ${state.sucursal==='all'?'active':''}" data-s="all">Ambas <small>(${fmtShort(d.reduce((a,b)=>a+b.saldo,0))})</small></button>`;
+  Object.entries(sucs).sort((a,b)=>b[1]-a[1]).forEach(([s,t]) => {
+    sHtml += `<button class="tab ${state.sucursal===s?'active':''}" data-s="${s}">${s} <small>(${fmtShort(t)})</small></button>`;
+  });
+  document.getElementById('suc-tabs').innerHTML = sHtml;
+  
+  const dv = state.sucursal === 'all' ? d : d.filter(r => r.origen === state.sucursal);
+  const vends = {};
+  dv.forEach(r => {
+    if (!vends[r.vendedor]) vends[r.vendedor] = { c: 0, t: 0 };
+    vends[r.vendedor].c++;
+    vends[r.vendedor].t += r.saldo;
+  });
+  let vHtml = `<button class="tab ${state.vendor==='all'?'active':''}" data-v="all">Todos <small>(${dv.length})</small></button>`;
+  Object.entries(vends).sort((a,b)=>b[1].t-a[1].t).forEach(([n,i]) => {
+    vHtml += `<button class="tab ${state.vendor===n?'active':''}" data-v="${n}">${n} <small>(${i.c} · ${fmtShort(i.t)})</small></button>`;
+  });
+  document.getElementById('vend-tabs').innerHTML = vHtml;
+}
+
+function renderTable() {
+  let filtered = baseFiltered().filter(r => r.canal !== 'RETAIL');
+  if (state.plazo !== 'all') filtered = filtered.filter(r => getPlazoGrupo(r) === state.plazo);
+  if (state.soloMorosos) filtered = filtered.filter(esMoroso);
+  if (state.sucursal !== 'all') filtered = filtered.filter(r => r.origen === state.sucursal);
+  if (state.vendor !== 'all') filtered = filtered.filter(r => r.vendedor === state.vendor);
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    filtered = filtered.filter(r => r.nombre.toLowerCase().includes(q) || r.rut.includes(q));
+  }
+  if (state.estado !== 'all') filtered = filtered.filter(r => getComentario(r.rut).estado === state.estado);
+  if (state.conComentario) filtered = filtered.filter(r => { const c = getComentario(r.rut); return c.comentario || c.estado || c.fecha_reunion; });
+
+  if (state.sort === 'urgencia') {
+    filtered.sort((a, b) => {
+      const sa = getSemaforoCliente(a);
+      const sb = getSemaforoCliente(b);
+      // Más vencido primero (días más negativos = más vencido)
+      return (sa.dias === null ? 999 : sa.dias) - (sb.dias === null ? 999 : sb.dias);
+    });
+  } else if (state.sort === 'riesgo') {
+    filtered.sort((a, b) => (b.mayor90*8 + b.entre61_90*4 + b.entre31_60*2 + b.entre0_30) - (a.mayor90*8 + a.entre61_90*4 + a.entre31_60*2 + a.entre0_30));
+  } else if (state.sort === 'saldo') {
+    filtered.sort((a, b) => b.saldo - a.saldo);
+  } else if (state.sort === 'reunion') {
+    filtered.sort((a, b) => {
+      const fa = getComentario(a.rut).fecha_reunion || '9999-99-99';
+      const fb = getComentario(b.rut).fecha_reunion || '9999-99-99';
+      return fa.localeCompare(fb);
+    });
+  } else {
+    filtered.sort((a, b) => a.nombre.localeCompare(b.nombre));
+  }
+
+  const total = filtered.reduce((a, b) => a + b.saldo, 0);
+  document.getElementById('count').innerHTML = `<strong>${filtered.length}</strong> clientes &nbsp;·&nbsp; Subtotal: <strong>${fmt(total)}</strong>`;
+
+  if (filtered.length === 0) {
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="11" style="padding: 30px; text-align: center; color: #888;">Sin resultados</td></tr>';
+    return;
+  }
+
+  document.getElementById('tbody').innerHTML = filtered.map((r, idx) => {
+    let cls = '';
+    if (r.mayor90 > 0) cls = 'critico';
+    else if (r.entre61_90 > 0 || r.entre31_60 > 0) cls = 'moroso';
+    
+    const gest = getComentario(r.rut);
+    const tieneComentario = gest.comentario || gest.estado || gest.fecha_reunion;
+    const comentBadge = gest.comentario ? `<span style="background:#f59e0b;color:#fff;font-size:9px;padding:1px 5px;border-radius:10px;margin-left:4px;font-weight:700;" title="${(gest.vendedor||'')+': '+gest.comentario.substring(0,80)}">💬</span>` : '';
+    
+    const alerts = [];
+    if (r.mayor90 > 0) alerts.push('<span class="a-90">90+</span>');
+    if (r.tipo_politica === 'contado') alerts.push('<span class="a-contado-deuda">⚡</span>');
+    if (r.exceso > 0) alerts.push('<span class="a-credit">$+</span>');
+    if (r.vendedor === 'SIN ASIGNAR') alerts.push('<span class="a-novendor">?</span>');
+    if (r.cliente_cerrado) alerts.push('<span class="a-closed">✕</span>');
+    if (tieneComentario) alerts.push('<span class="a-comment" title="Con gestión">📝</span>');
+
+    const estadoCell = gest.estado ? `<span class="estado-pill estado-${gest.estado}">${estadoLabel(gest.estado)}</span>` : '<span style="color:#bbb;font-size:11px;">—</span>';
+    const reunionCell = gest.fecha_reunion ? `<span style="font-size:11px;font-weight:500;">${gest.fecha_reunion}</span>` : '<span style="color:#bbb;font-size:11px;">—</span>';
+    const plazoCell = `<span class="plazo-pill ${getPlazoClass(r)}">${getPlazoLabel(r)}</span>`;
+
+    const semCli = getSemaforoCliente(r);
+    return `<tr class="${cls}" data-idx="${idx}">
+      <td><div style="display:flex;align-items:flex-start;gap:8px;"><span class="sem sem-${semCli.color}" style="margin-top:4px;flex-shrink:0;" title="${semCli.label}"></span>
+        <div><strong>${r.nombre}${comentBadge}${r.cliente_cerrado ? ' <span style="color:#D32027;font-size:10px;">[CERRADO]</span>' : ''}</strong>
+          <br><span style="font-size: 10px; color: #999;">${r.rut} · ${r.origen} · ${r.docs.length} docs · <span style="color:${semCli.color.startsWith('rojo')?'#D32027':semCli.color==='amarillo'?'#b54708':semCli.color==='verde'?'#15803d':'#999'};font-weight:600;">${semCli.label}</span></span></div></div></td>
+      <td><span class="vendor-pill ${r.vendedor === 'SIN ASIGNAR' ? 'sin-asignar' : ''}">${r.vendedor}</span></td>
+      <td>${plazoCell}</td>
+      <td class="num">${r.entre0_30 ? fmt(r.entre0_30) : '–'}</td>
+      <td class="num ${r.entre31_60 ? 'num-warning' : 'num-muted'}">${r.entre31_60 ? fmt(r.entre31_60) : '–'}</td>
+      <td class="num ${r.entre61_90 ? 'num-warning' : 'num-muted'}">${r.entre61_90 ? fmt(r.entre61_90) : '–'}</td>
+      <td class="num ${r.mayor90 ? 'num-danger' : 'num-muted'}">${r.mayor90 ? fmt(r.mayor90) : '–'}</td>
+      <td class="num" style="font-weight: 600;">${fmt(r.saldo)}</td>
+      <td>${estadoCell}</td>
+      <td>${reunionCell}</td>
+      <td class="alerts-cell">${alerts.join(' ')}</td>
+    </tr>`;
+  }).join('');
+
+  window._currentFiltered = filtered;
+  document.querySelectorAll('#tbody tr[data-idx]').forEach(row => {
+    row.addEventListener('click', () => openModal(parseInt(row.dataset.idx)));
+  });
+}
+
+function openModal(idx) {
+  const c = window._currentFiltered[idx];
+  if (!c) return;
+  
+  document.getElementById('modal-title').textContent = c.nombre + (c.cliente_cerrado ? ' [CERRADO]' : '');
+  const dias = diasVencidosMax(c);
+  document.getElementById('modal-subtitle').textContent = `${c.rut} · ${c.origen} · ${c.vendedor} · Plazo: ${getPlazoLabel(c)}${dias ? ' · ' + dias + ' días vencidos máx.' : ''}`;
+  
+  const gest = getComentario(c.rut);
+  
+  let body = '';
+  
+  if (c.tipo_politica === 'contado' && !c.cliente_cerrado) {
+    body += `<div style="background: #fef2f2; border: 1px solid #D32027; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #7f1d1d;">
+      <strong>⚡ Cliente AL CONTADO con deuda vencida.</strong> Verificar política de crédito.
+    </div>`;
+  }
+  if (esMoroso(c) && !c.cliente_cerrado) {
+    body += `<div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #78350f;">
+      <strong>⚠ Cliente moroso</strong> · saldo vencido más de 30 días: ${fmt(c.mayor90 + c.entre61_90 + c.entre31_60)}
+    </div>`;
+  }
+  
+  body += '<div class="modal-info">';
+  body += `<div class="modal-info-item"><p class="modal-info-label">Saldo total</p><p class="modal-info-value">${fmt(c.saldo)}</p></div>`;
+  if (c.mayor90 > 0) body += `<div class="modal-info-item"><p class="modal-info-label">&gt;90 días</p><p class="modal-info-value danger">${fmt(c.mayor90)}</p></div>`;
+  if (c.entre61_90 > 0) body += `<div class="modal-info-item"><p class="modal-info-label">61-90 días</p><p class="modal-info-value warning">${fmt(c.entre61_90)}</p></div>`;
+  if (c.entre31_60 > 0) body += `<div class="modal-info-item"><p class="modal-info-label">31-60 días</p><p class="modal-info-value warning">${fmt(c.entre31_60)}</p></div>`;
+  if (c.entre0_30 > 0) body += `<div class="modal-info-item"><p class="modal-info-label">0-30 días</p><p class="modal-info-value">${fmt(c.entre0_30)}</p></div>`;
+  if (c.tipo_politica === 'credito') {
+    body += `<div class="modal-info-item"><p class="modal-info-label">Línea / Plazo</p><p class="modal-info-value">${fmt(c.credito_asignado)} · ${c.plazo_dias}d</p></div>`;
+    if (c.exceso > 0) body += `<div class="modal-info-item"><p class="modal-info-label">Exceso crédito</p><p class="modal-info-value info">${fmt(c.exceso)}</p></div>`;
+  }
+  body += `<div class="modal-info-item"><p class="modal-info-label">Documentos</p><p class="modal-info-value">${c.docs.length}</p></div>`;
+  if (dias) body += `<div class="modal-info-item"><p class="modal-info-label">Días vencidos máx.</p><p class="modal-info-value ${dias > 90 ? 'danger' : dias > 30 ? 'warning' : ''}">${dias} días</p></div>`;
+  body += '</div>';
+
+  body += `<div class="gestion-section">
+    <h4>📝 Gestión de cobranza</h4>
+    <div class="gestion-grid">
+      <div>
+        <p class="label">Fecha próxima reunión / contacto</p>
+        <input type="date" id="g-fecha" value="${gest.fecha_reunion || ''}">
+      </div>
+      <div>
+        <p class="label">Estado</p>
+        <select id="g-estado">
+          <option value="">— sin estado —</option>
+          <option value="pendiente" ${gest.estado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="contactado" ${gest.estado==='contactado'?'selected':''}>Contactado</option>
+          <option value="agendado" ${gest.estado==='agendado'?'selected':''}>Agendado</option>
+          <option value="en_pago" ${gest.estado==='en_pago'?'selected':''}>En pago</option>
+          <option value="pagado" ${gest.estado==='pagado'?'selected':''}>Pagado</option>
+          <option value="sin_contacto" ${gest.estado==='sin_contacto'?'selected':''}>Sin contacto</option>
+        </select>
+      </div>
+    </div>
+    <p class="label">Comentario / notas de reunión</p>
+    <textarea id="g-comentario" placeholder="Ej: Reunión 18/05 con Juan Pérez. Acordó pagar $500k esta semana y resto en 15 días...">${gest.comentario || ''}</textarea>
+    <div class="gestion-save-row">
+      <span class="saved-indicator hidden" id="saved-indicator">✓ Guardado</span>
+      <div style="display: flex; gap: 8px;">
+        ${(gest.comentario || gest.estado || gest.fecha_reunion) ? '<button onclick="borrarComentario(\'' + c.rut + '\')" style="padding: 6px 12px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; border-radius: 6px; font-size: 12px; cursor: pointer;">🗑 Borrar gestión</button>' : ''}
+        <button class="btn btn-success" onclick="guardarComentario('${c.rut}')" style="background:#16a34a;">💾 Guardar</button>
+      </div>
+    </div>
+    ${gest.actualizado ? '<p style="margin: 8px 0 0 0; font-size: 10px; color: #888;">Última actualización: ' + new Date(gest.actualizado).toLocaleString('es-CL') + '</p>' : ''}
+  </div>`;
+
+  body += '<h4 style="margin: 0 0 12px 0; font-size: 14px;">Detalle de documentos vencidos</h4>';
+  
+  if (c.docs && c.docs.length > 0) {
+    body += '<div class="modal-docs"><table>';
+    body += '<thead><tr><th>Estado</th><th>N° Doc</th><th>Tipo</th><th>Vencimiento</th><th class="num">Monto</th></tr></thead><tbody>';
+    // Ordenar docs por urgencia (peor primero)
+    const docsOrdenados = [...c.docs].sort((a, b) => {
+      const sa = getSemaforoDoc(a);
+      const sb = getSemaforoDoc(b);
+      return (sa.dias === null ? 0 : sa.dias) - (sb.dias === null ? 0 : sb.dias);
+    });
+    docsOrdenados.forEach(d => {
+      const sem = getSemaforoDoc(d);
+      body += `<tr>
+        <td style="white-space:nowrap;"><span class="sem sem-${sem.color}"></span> <span style="font-size:11px;font-weight:600;color:${sem.color.startsWith('rojo')?'#D32027':sem.color==='amarillo'?'#b54708':sem.color==='verde'?'#15803d':'#666'};">${sem.label}</span></td>
+        <td><strong>${d.numero}</strong></td>
+        <td style="font-size: 11px; color: #888;">${d.docto}</td>
+        <td>${fmtDate(d.vencimiento)}</td>
+        <td class="num" style="font-weight: 600;">${fmt(d.monto)}</td>
+      </tr>`;
+    });
+    body += '</tbody></table></div>';
+  }
+  
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal').classList.add('show');
+}
+
+function guardarComentario(rut) {
+  const fecha = document.getElementById('g-fecha').value;
+  const estado = document.getElementById('g-estado').value;
+  const comentario = document.getElementById('g-comentario').value.trim();
+  setComentario(rut, { fecha_reunion: fecha, estado: estado, comentario: comentario });
+  const ind = document.getElementById('saved-indicator');
+  ind.classList.remove('hidden');
+  setTimeout(() => ind.classList.add('hidden'), 2000);
+  renderTable();
+}
+
+function borrarComentario(rut) {
+  if (!confirm('¿Borrar la gestión de cobranza de este cliente?')) return;
+  delete comentarios[rut]; saveComentarios(); closeModal(); renderTable();
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// renderAll redefined below
+
+document.getElementById('excluir-cerrado').addEventListener('change', e => { state.excluirCerrado = e.target.checked; renderAll(); });
+document.getElementById('solo-morosos').addEventListener('change', e => { state.soloMorosos = e.target.checked; renderAll(); });
+document.getElementById('con-comentario').addEventListener('change', e => { state.conComentario = e.target.checked; renderTable(); });
+document.getElementById('suc-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if (!btn) return;
+  state.sucursal = btn.dataset.s; state.vendor = 'all'; renderAll();
+});
+document.getElementById('vend-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if (!btn) return;
+  state.vendor = btn.dataset.v; renderAll();
+});
+document.getElementById('search').addEventListener('input', e => { state.search = e.target.value; renderTable(); });
+document.getElementById('estado-filter').addEventListener('change', e => { state.estado = e.target.value; renderTable(); });
+document.getElementById('sort').addEventListener('change', e => { state.sort = e.target.value; renderTable(); });
+
+function exportCSV() {
+  const rowsClient = [['Cliente', 'RUT', 'Vendedor', 'Origen', 'Plazo', '>90d', '61-90d', '31-60d', '0-30d', 'Saldo', 'Crédito', 'Plazo (d)', 'Exceso', 'Moroso', 'Cerrado', 'N docs', 'Días vencidos máx']];
+  data.forEach(r => rowsClient.push([
+    '"' + r.nombre.replace(/"/g, '""') + '"', r.rut, r.vendedor, r.origen, getPlazoLabel(r),
+    r.mayor90, r.entre61_90, r.entre31_60, r.entre0_30, r.saldo,
+    r.credito_asignado, r.plazo_dias, r.exceso, esMoroso(r) ? 'SI' : 'NO', r.cliente_cerrado ? 'SI' : 'NO', r.docs.length, diasVencidosMax(r)
+  ]));
+  downloadCSV(rowsClient, 'cobranza_clientes_14052026.csv');
+  setTimeout(() => {
+    const rowsDoc = [['Cliente', 'RUT', 'Vendedor', 'Origen', 'Plazo', 'N° Documento', 'Tipo', 'Vencimiento', 'Monto', 'Rango']];
+    data.forEach(r => {
+      r.docs.forEach(d => {
+        rowsDoc.push(['"' + r.nombre.replace(/"/g, '""') + '"', r.rut, r.vendedor, r.origen, getPlazoLabel(r), d.numero, d.docto, d.vencimiento, d.monto, d.rango]);
+      });
+    });
+    downloadCSV(rowsDoc, 'cobranza_documentos_14052026.csv');
+  }, 300);
+}
+
+function exportGestion() {
+  const conGestion = data.filter(r => {
+    const g = getComentario(r.rut);
+    return g.comentario || g.estado || g.fecha_reunion;
+  });
+  if (conGestion.length === 0) {
+    alert('Aún no has registrado gestión en ningún cliente.\n\nAbre un cliente, completa la sección "Gestión de cobranza" y guarda.');
+    return;
+  }
+  generarReporteImprimible(conGestion);
+}
+
+function exportGestionCSV() {
+  const conGestion = data.filter(r => {
+    const g = getComentario(r.rut);
+    return g.comentario || g.estado || g.fecha_reunion;
+  });
+  if (conGestion.length === 0) { alert('Sin gestión registrada.'); return; }
+  conGestion.sort((a, b) => {
+    const fa = getComentario(a.rut).fecha_reunion || '9999';
+    const fb = getComentario(b.rut).fecha_reunion || '9999';
+    return fa.localeCompare(fb);
+  });
+  const rows = [['Cliente', 'RUT', 'Vendedor', 'Origen', 'Plazo', 'Saldo', '>90d', '61-90d', '31-60d', '0-30d', 'Días vencidos máx', 'Moroso', 'Estado', 'Fecha reunión', 'Comentario', 'Última actualización']];
+  conGestion.forEach(r => {
+    const g = getComentario(r.rut);
+    rows.push([
+      '"' + r.nombre.replace(/"/g, '""') + '"', r.rut, r.vendedor, r.origen, getPlazoLabel(r),
+      r.saldo, r.mayor90, r.entre61_90, r.entre31_60, r.entre0_30,
+      diasVencidosMax(r), esMoroso(r) ? 'SI' : 'NO',
+      estadoLabel(g.estado || ''), g.fecha_reunion || '',
+      '"' + (g.comentario || '').replace(/"/g, '""').replace(/\n/g, ' / ') + '"',
+      g.actualizado ? new Date(g.actualizado).toLocaleString('es-CL') : ''
+    ]);
+  });
+  const fecha = new Date().toISOString().slice(0, 10);
+  downloadCSV(rows, `gestion_cobranza_${fecha}.csv`);
+}
+
+function generarReporteImprimible(conGestion) {
+  // Ordenar por fecha reunión, luego por monto
+  conGestion.sort((a, b) => {
+    const fa = getComentario(a.rut).fecha_reunion || '9999';
+    const fb = getComentario(b.rut).fecha_reunion || '9999';
+    if (fa !== fb) return fa.localeCompare(fb);
+    return b.saldo - a.saldo;
+  });
+  
+  // Resumen
+  const totalDeuda = conGestion.reduce((a,b) => a+b.saldo, 0);
+  const porEstado = {};
+  conGestion.forEach(c => {
+    const e = getComentario(c.rut).estado || 'pendiente';
+    if (!porEstado[e]) porEstado[e] = { count: 0, saldo: 0 };
+    porEstado[e].count++;
+    porEstado[e].saldo += c.saldo;
+  });
+  const porVendedor = {};
+  conGestion.forEach(c => {
+    if (!porVendedor[c.vendedor]) porVendedor[c.vendedor] = { count: 0, saldo: 0 };
+    porVendedor[c.vendedor].count++;
+    porVendedor[c.vendedor].saldo += c.saldo;
+  });
+  
+  const hoy = new Date();
+  const fechaStr = hoy.toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' });
+  const horaStr = hoy.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+  
+  // Construir HTML del reporte
+  let reporte = `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><title>Reporte de gestión de cobranza · Toronegro</title>
+<style>
+  @page { size: A4 landscape; margin: 1.5cm; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: #1a1a1a; margin: 0; padding: 24px; background: #fff; font-size: 11px; line-height: 1.4; }
+  .print-actions { background: #f5f5f7; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .print-actions p { margin: 0; font-size: 12px; color: #666; }
+  .btn-print { background: #D32027; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-print:hover { background: #a01a20; }
+  @media print { .print-actions { display: none !important; } body { padding: 0; } }
+  
+  header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #D32027; padding-bottom: 16px; margin-bottom: 24px; }
+  header .header-brand { display: flex; align-items: center; gap: 16px; }
+  header .report-logo { height: 68px; width: auto; display: block; }
+  header h2 { margin: 0; font-size: 18px; font-weight: 700; color: #000; letter-spacing: 0.3px; }
+  header .subtitle { margin: 4px 0 0 0; font-size: 12px; color: #666; font-weight: 500; }
+  header .meta { text-align: right; font-size: 11px; color: #666; }
+  header .meta strong { color: #1a1a1a; display: block; font-size: 13px; margin-bottom: 2px; }
+  
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; color: #D32027; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0; padding-bottom: 4px; border-bottom: 1px solid #eee; }
+  
+  .resumen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }
+  .resumen-card { background: #fafafa; border-left: 3px solid #000; padding: 10px 14px; border-radius: 4px; }
+  .resumen-card.danger { border-left-color: #D32027; background: #fef2f2; }
+  .resumen-card.warning { border-left-color: #f59e0b; background: #fffbeb; }
+  .resumen-card.success { border-left-color: #16a34a; background: #f0fdf4; }
+  .resumen-label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin: 0 0 4px 0; }
+  .resumen-value { font-size: 18px; font-weight: 700; margin: 0; color: #1a1a1a; }
+  .resumen-card.danger .resumen-value { color: #D32027; }
+  .resumen-card.warning .resumen-value { color: #b54708; }
+  .resumen-card.success .resumen-value { color: #15803d; }
+  .resumen-sub { font-size: 10px; color: #888; margin: 3px 0 0 0; }
+  
+  .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .breakdown-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .breakdown-table th { text-align: left; padding: 6px 10px; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.3px; background: #fafafa; border-bottom: 2px solid #000; }
+  .breakdown-table th.num { text-align: right; }
+  .breakdown-table td { padding: 6px 10px; border-bottom: 1px solid #f0f0f0; }
+  .breakdown-table td.num { text-align: right; font-weight: 600; }
+  
+  table.principal { width: 100%; border-collapse: collapse; font-size: 10px; }
+  table.principal thead { background: #000; color: #fff; }
+  table.principal th { text-align: left; padding: 8px 8px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  table.principal th.num { text-align: right; }
+  table.principal td { padding: 8px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+  table.principal td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.principal tr.urgente { background: #fef2f2; }
+  table.principal tr.moroso-row { background: #fffbeb; }
+  table.principal .cliente-name { font-weight: 700; color: #1a1a1a; }
+  table.principal .cliente-rut { font-size: 9px; color: #888; }
+  table.principal .moroso-flag { color: #D32027; font-weight: 700; font-size: 9px; }
+  
+  .estado-pill { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .estado-pendiente { background: #f3f4f6; color: #4b5563; }
+  .estado-contactado { background: #dbeafe; color: #1e40af; }
+  .estado-agendado { background: #ede9fe; color: #6d28d9; }
+  .estado-en_pago { background: #fef3c7; color: #b54708; }
+  .estado-pagado { background: #dcfce7; color: #15803d; }
+  .estado-sin_contacto { background: #fee2e2; color: #D32027; }
+  
+  .comentario { font-size: 10px; color: #444; font-style: italic; white-space: normal; word-wrap: break-word; line-height: 1.45; }
+  
+  footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 9px; color: #888; display: flex; justify-content: space-between; }
+  footer .firma { text-align: right; }
+  footer .firma strong { color: #1a1a1a; font-size: 11px; }
+</style></head>
+<body>
+
+<div class="print-actions">
+  <p><strong>Vista previa del reporte.</strong> Click en "Imprimir / Guardar PDF" para exportar.</p>
+  <div>
+    <button class="btn-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+  </div>
+</div>
+
+<header>
+  <div class="header-brand">
+    <img src="data:image/jpeg;base64,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" alt="Toronegro" class="report-logo">
+    <div>
+      <h2>Reporte de Gestión de Cobranza</h2>
+      <p class="subtitle">Canal Mayorista · Concón + La Serena</p>
+    </div>
+  </div>
+  <div class="meta">
+    <strong>Generado: ${fechaStr}</strong>
+    <span>${horaStr} hrs · Datos al 14/05/2026</span>
+  </div>
+</header>
+
+<div class="section">
+  <p class="section-title">Resumen ejecutivo</p>
+  <div class="resumen-grid">
+    <div class="resumen-card">
+      <p class="resumen-label">Clientes gestionados</p>
+      <p class="resumen-value">${conGestion.length}</p>
+      <p class="resumen-sub">con cobranza activa</p>
+    </div>
+    <div class="resumen-card danger">
+      <p class="resumen-label">Deuda total gestionada</p>
+      <p class="resumen-value">${fmt(totalDeuda)}</p>
+      <p class="resumen-sub">suma de saldos</p>
+    </div>
+    <div class="resumen-card warning">
+      <p class="resumen-label">Morosos (+30d vencidos)</p>
+      <p class="resumen-value">${conGestion.filter(esMoroso).length}</p>
+      <p class="resumen-sub">${fmt(conGestion.filter(esMoroso).reduce((a,b)=>a+b.saldo,0))}</p>
+    </div>
+    <div class="resumen-card success">
+      <p class="resumen-label">Con reunión agendada</p>
+      <p class="resumen-value">${conGestion.filter(c => getComentario(c.rut).fecha_reunion).length}</p>
+      <p class="resumen-sub">próximos contactos</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="breakdown-grid">
+    <div>
+      <p class="section-title">Por estado de gestión</p>
+      <table class="breakdown-table">
+        <thead><tr><th>Estado</th><th class="num">Clientes</th><th class="num">Saldo</th></tr></thead>
+        <tbody>
+          ${Object.entries(porEstado).sort((a,b)=>b[1].saldo-a[1].saldo).map(([e, d]) => 
+            `<tr><td><span class="estado-pill estado-${e}">${estadoLabel(e)}</span></td><td class="num">${d.count}</td><td class="num">${fmt(d.saldo)}</td></tr>`
+          ).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <p class="section-title">Por vendedor</p>
+      <table class="breakdown-table">
+        <thead><tr><th>Vendedor</th><th class="num">Clientes</th><th class="num">Saldo</th></tr></thead>
+        <tbody>
+          ${Object.entries(porVendedor).sort((a,b)=>b[1].saldo-a[1].saldo).map(([v, d]) => 
+            `<tr><td><strong>${v}</strong></td><td class="num">${d.count}</td><td class="num">${fmt(d.saldo)}</td></tr>`
+          ).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p class="section-title">Detalle de gestión por cliente (${conGestion.length})</p>
+  <table class="principal">
+    <thead>
+      <tr>
+        <th style="width:22%">Cliente</th>
+        <th style="width:9%">Vendedor</th>
+        <th class="num" style="width:10%">Saldo</th>
+        <th class="num" style="width:7%">Días venc.</th>
+        <th style="width:9%">Estado</th>
+        <th style="width:9%">Próx. reunión</th>
+        <th style="width:34%">Comentario</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${conGestion.map(c => {
+        const g = getComentario(c.rut);
+        const isMor = esMoroso(c);
+        const dias = diasVencidosMax(c);
+        const cls = c.mayor90 > 0 ? 'urgente' : isMor ? 'moroso-row' : '';
+        return `<tr class="${cls}">
+          <td>
+            <div class="cliente-name">${c.nombre}</div>
+            <div class="cliente-rut">${c.rut} · ${c.origen} · ${getPlazoLabel(c)}${isMor ? ' · <span class="moroso-flag">MOROSO</span>' : ''}</div>
+          </td>
+          <td>${c.vendedor}</td>
+          <td class="num"><strong>${fmt(c.saldo)}</strong>${c.mayor90 > 0 ? '<br><span style="color:#D32027;font-size:9px;font-weight:600;">+90d: '+fmt(c.mayor90)+'</span>' : ''}</td>
+          <td class="num"${dias > 60 ? ' style="color:#D32027;font-weight:700;"' : dias > 30 ? ' style="color:#b54708;font-weight:600;"' : ''}>${dias > 0 ? dias + 'd' : '—'}</td>
+          <td>${g.estado ? '<span class="estado-pill estado-'+g.estado+'">'+estadoLabel(g.estado)+'</span>' : '—'}</td>
+          <td><strong>${g.fecha_reunion || '—'}</strong></td>
+          <td class="comentario">${(g.comentario || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') || '<span style="color:#bbb;">—</span>'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <div>
+    Toronegro Beef Market · Canal Mayorista<br>
+    Reporte de Gestión de Cobranza generado automáticamente
+  </div>
+  <div class="firma">
+    <strong>Nicolás Vivanco</strong><br>
+    Jefe Canal Mayorista
+  </div>
+</footer>
+
+</body></html>`;
+
+  // Abrir en nueva ventana
+  const w = window.open('', '_blank', 'width=1200,height=800');
+  if (!w) {
+    alert('El navegador bloqueó la ventana emergente. Habilita ventanas emergentes para este sitio o usa el botón "CSV" como alternativa.');
+    return;
+  }
+  w.document.write(reporte);
+  w.document.close();
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const csvBOM = '\ufeff' + csv;
+  
+  // Intentar descarga normal
+  try {
+    const blob = new Blob([csvBOM], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; 
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  } catch (err) {
+    // Fallback: copiar al portapapeles y mostrar instrucciones
+    fallbackCopy(csv, filename);
+    return;
+  }
+  
+  // Detectar si estamos en sandbox (artifact público de Claude) y ofrecer copia como respaldo
+  if (window.location.hostname.includes('claude') || window.self !== window.top) {
+    setTimeout(() => {
+      if (confirm(`Si la descarga no funcionó (estás viendo el dashboard en la web de Claude), ¿quieres copiar el CSV al portapapeles?\n\nLuego puedes pegarlo en Excel/Google Sheets.\n\nNOTA: Para mejor experiencia, descarga el archivo HTML y ábrelo en tu computador (doble click).`)) {
+        fallbackCopy(csv, filename);
+      }
+    }, 500);
+  }
+}
+
+function fallbackCopy(csv, filename) {
+  // Intentar copiar al portapapeles
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(csv).then(() => {
+        alert(`✓ CSV copiado al portapapeles (${filename})\n\nPégalo (Cmd+V) en Excel o Google Sheets.\nUsa "Pegado especial → Texto" si las columnas no se separan bien.`);
+      }).catch(() => mostrarTextarea(csv, filename));
+    } else {
+      mostrarTextarea(csv, filename);
+    }
+  } catch (e) {
+    mostrarTextarea(csv, filename);
+  }
+}
+
+function mostrarTextarea(csv, filename) {
+  // Último recurso: mostrar un modal con el texto para copiar manual
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:10px;max-width:700px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="background:#000;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <strong style="font-size:14px;">CSV: ${filename}</strong>
+          <p style="margin:4px 0 0 0;font-size:11px;opacity:0.8;">Selecciona todo (Cmd+A) y copia (Cmd+C) para pegarlo en Excel</p>
+        </div>
+        <button onclick="this.closest('.csv-overlay-wrap').remove()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;">Cerrar</button>
+      </div>
+      <textarea readonly style="flex:1;border:none;padding:14px;font-family:monospace;font-size:11px;width:100%;resize:none;outline:none;">${csv}</textarea>
+    </div>
+  `;
+  overlay.className = 'csv-overlay-wrap';
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.querySelector('textarea').select(), 100);
+}
+
+function exportComentarios() {
+  const fecha = new Date().toISOString().slice(0, 10);
+  const blob = new Blob([JSON.stringify(comentarios, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `respaldo_comentarios_${fecha}.json`; a.click();
+}
+
+document.getElementById('import-file').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      const existentes = Object.keys(comentarios).length;
+      const nuevos = Object.keys(imported).length;
+      if (existentes > 0) {
+        if (!confirm(`Ya tienes ${existentes} comentarios guardados. ¿Reemplazarlos por los ${nuevos} del archivo?\n\nOK = reemplazar / Cancelar = combinar`)) {
+          comentarios = { ...comentarios, ...imported };
+        } else {
+          comentarios = imported;
+        }
+      } else {
+        comentarios = imported;
+      }
+      saveComentarios();
+      renderTable();
+      alert(`✓ ${Object.keys(comentarios).length} comentarios cargados.`);
+    } catch (err) {
+      alert('Error al cargar el archivo. Verifica que sea un JSON válido.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ════════════════════════════════════════════════════════════
+// NUEVAS FUNCIONES: DSO · ACUERDOS · VENDOR · COMPORTAMIENTO
+// ════════════════════════════════════════════════════════════
+
+function togglePanel(bodyId, iconId) {
+  const body = document.getElementById(bodyId);
+  const icon = document.getElementById(iconId);
+  if (!body) return;
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  if (icon) icon.textContent = hidden ? '▼' : '▶';
+}
+
+function m0(r) { return Math.round((r.plazo_dias || 30) / 2); }
+
+function calcDSO(clientes) {
+  const total = clientes.reduce((a,b) => a + b.saldo, 0);
+  if (!total) return 0;
+  const w = clientes.reduce((a,b) => a + b.entre0_30*m0(b) + b.entre31_60*45 + b.entre61_90*75 + b.mayor90*110, 0);
+  return Math.round(w / total);
+}
+function calcDSOCorriente(clientes) {
+  const total = clientes.reduce((a,b) => a + b.entre0_30 + b.entre31_60 + b.entre61_90, 0);
+  if (!total) return 0;
+  const w = clientes.reduce((a,b) => a + b.entre0_30*m0(b) + b.entre31_60*45 + b.entre61_90*75, 0);
+  return Math.round(w / total);
+}
+function calcDSO30(clientes) {
+  const t = clientes.reduce((a,b) => a + b.entre0_30, 0);
+  if (!t) return 0;
+  return Math.round(clientes.reduce((a,b) => a + b.entre0_30*m0(b), 0) / t);
+}
+function calcDSO60(clientes) {
+  const t = clientes.reduce((a,b) => a + b.entre0_30 + b.entre31_60, 0);
+  if (!t) return 0;
+  return Math.round(clientes.reduce((a,b) => a + b.entre0_30*m0(b) + b.entre31_60*45, 0) / t);
+}
+function dsoColor(d) { return d <= 20 ? '#16a34a' : d <= 40 ? '#f59e0b' : '#D32027'; }
+
+function renderDSOCards() {
+  const dsoSection = document.getElementById('dso-section');
+  if (dsoSection) dsoSection.style.display = esMaestro ? '' : 'none';
+  if (!esMaestro) return;
+  if (!esMaestro) return;
+  const allData = data;
+  const clsMap = { 'Concón': 'concon', 'La Serena': 'serena' };
+  const origenes = ['Concón', 'La Serena'];
+  let html = '';
+
+  // --- Fila 1: totales de saldo por sucursal ---
+  origenes.forEach(origen => {
+    const clientes = allData.filter(r => r.origen === origen);
+    const total = clientes.reduce((a,b) => a+b.saldo, 0);
+    const morosos = clientes.filter(esMoroso).length;
+    const cls = clsMap[origen] || 'local';
+    html += '<div class="dso-card ' + cls + '">' +
+      '<p class="dso-label">📍 ' + origen + '</p>' +
+      '<p class="dso-value">' + fmtShort(total) + '</p>' +
+      '<p class="dso-sub">' + clientes.length + ' clientes · ' + morosos + ' morosos</p></div>';
+  });
+
+  // --- DSO por sucursal: corriente vs total ---
+  origenes.forEach(origen => {
+    const clientes = allData.filter(r => r.origen === origen);
+    const dsoC = calcDSOCorriente(clientes);
+    const dsoT = calcDSO(clientes);
+    html += '<div class="dso-card dso-global" style="min-width:130px">' +
+      '<p class="dso-label">📈 DSO ' + origen + '</p>' +
+      '<p class="dso-value" style="color:' + dsoColor(dsoC) + '">' + dsoC + 'd</p>' +
+      '<p class="dso-sub" style="font-size:10px">corriente · total: <strong style="color:' + dsoColor(dsoT) + '">' + dsoT + 'd</strong></p></div>';
+  });
+
+  // --- DSO globales ---
+  const dso30 = calcDSO30(allData), dso60 = calcDSO60(allData);
+  const dsoGC = calcDSOCorriente(allData), dsoGT = calcDSO(allData);
+  html += '<div class="dso-card dso30"><p class="dso-label">⏱ DSO 0-30d</p>' +
+    '<p class="dso-value" style="color:' + dsoColor(dso30) + '">' + dso30 + 'd</p>' +
+    '<p class="dso-sub">Cartera al día</p></div>' +
+    '<div class="dso-card dso60"><p class="dso-label">⏱ DSO 0-60d</p>' +
+    '<p class="dso-value" style="color:' + dsoColor(dso60) + '">' + dso60 + 'd</p>' +
+    '<p class="dso-sub">Incluye deuda 31-60d</p></div>' +
+    '<div class="dso-card dso-global" style="min-width:130px"><p class="dso-label">📈 DSO Global</p>' +
+    '<p class="dso-value" style="color:' + dsoColor(dsoGC) + '">' + dsoGC + 'd</p>' +
+    '<p class="dso-sub" style="font-size:10px">corriente · total: <strong style="color:' + dsoColor(dsoGT) + '">' + dsoGT + 'd</strong></p></div>';
+  document.getElementById('dso-cards').innerHTML = html;
+}
+
+function renderAcuerdos() {
+  const selEl = document.getElementById('acuerdos-dias');
+  if (!selEl) return;
+  const dias = parseInt(selEl.value);
+  const desde = new Date(Date.now() - dias * 86400000);
+  const lista = data
+    .map(function(c) { return Object.assign({}, c, { gest: getComentario(c.rut) }); })
+    .filter(function(c) { return c.gest.actualizado && new Date(c.gest.actualizado) >= desde; })
+    .sort(function(a,b) { return new Date(b.gest.actualizado) - new Date(a.gest.actualizado); });
+  const el = document.getElementById('acuerdos-lista');
+  if (!lista.length) {
+    el.innerHTML = '<div style="text-align:center;padding:28px;color:#888;font-size:13px;">Sin acuerdos en los últimos ' + dias + ' días.<br><span style="font-size:11px;">Los comentarios que guardes en cada cliente aparecerán aquí para la reunión de avance.</span></div>';
+    return;
+  }
+  el.innerHTML = lista.map(function(c) {
+    var f = new Date(c.gest.actualizado);
+    var fStr = f.toLocaleDateString('es-CL', { weekday:'long', day:'numeric', month:'long' });
+    var hora = f.toLocaleTimeString('es-CL', { hour:'2-digit', minute:'2-digit' });
+    var estadoHtml = c.gest.estado ? '<span class="estado-pill estado-' + c.gest.estado + '">' + estadoLabel(c.gest.estado) + '</span>' : '';
+    var reunionHtml = c.gest.fecha_reunion ? '<span style="background:#f0fdf4;color:#15803d;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">📅 ' + c.gest.fecha_reunion + '</span>' : '';
+    var textoHtml = c.gest.comentario
+      ? '<p class="acuerdo-texto">' + c.gest.comentario + '</p>'
+      : '<p class="acuerdo-texto" style="color:#aaa;font-style:italic;">Sin comentario de texto</p>';
+    return '<div class="acuerdo-item">' +
+      '<p class="acuerdo-nombre">' + c.nombre + ' ' + estadoHtml + reunionHtml + '</p>' +
+      '<p class="acuerdo-meta">' + c.rut + ' · ' + c.origen + ' · ' + c.vendedor + ' · Saldo: <strong>' + fmt(c.saldo) + '</strong> · ' + fStr + ' ' + hora + '</p>' +
+      textoHtml + '</div>';
+  }).join('');
+}
+
+function exportAcuerdosCSV() {
+  var selEl = document.getElementById('acuerdos-dias');
+  var dias = selEl ? parseInt(selEl.value) : 14;
+  var desde = new Date(Date.now() - dias * 86400000);
+  var rows = [['RUT','Nombre','Vendedor','Origen','Saldo','Estado','Fecha Reunión','Comentario','Actualizado']];
+  data.forEach(function(c) {
+    var g = getComentario(c.rut);
+    if (!g.actualizado || new Date(g.actualizado) < desde) return;
+    rows.push([c.rut, c.nombre, c.vendedor, c.origen, c.saldo,
+      g.estado||'', g.fecha_reunion||'',
+      (g.comentario||'').replace(/"/g,'""'),
+      new Date(g.actualizado).toLocaleString('es-CL')]);
+  });
+  var csv = rows.map(function(r) { return r.map(function(v) { return '"' + v + '"'; }).join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = 'acuerdos_cobranza.csv';
+  a.click();
+}
+
+function renderVendorDSO() {
+  if (!esMaestro) { const el=document.getElementById('vendor-dso-panel'); if(el) el.style.display='none'; return; }
+  var d = baseFiltered();
+  var vMap = {};
+  d.forEach(function(r) { if (!vMap[r.vendedor]) vMap[r.vendedor] = []; vMap[r.vendedor].push(r); });
+  var rows = Object.entries(vMap).map(function(entry) {
+    var nombre = entry[0], clientes = entry[1];
+    var total = clientes.reduce(function(a,b){return a+b.saldo;}, 0);
+    var morosos = clientes.filter(esMoroso).length;
+    var vencido = clientes.reduce(function(a,b){return a+b.mayor90+b.entre61_90+b.entre31_60;}, 0);
+    var pctV = total ? Math.round(vencido/total*100) : 0;
+    var dso = calcDSO(clientes);
+    var p0  = total ? Math.round(clientes.reduce(function(a,b){return a+b.entre0_30;},0)/total*100) : 0;
+    var p31 = total ? Math.round(clientes.reduce(function(a,b){return a+b.entre31_60;},0)/total*100) : 0;
+    var p61 = total ? Math.round(clientes.reduce(function(a,b){return a+b.entre61_90;},0)/total*100) : 0;
+    var p90 = total ? Math.round(clientes.reduce(function(a,b){return a+b.mayor90;},0)/total*100) : 0;
+    return { nombre:nombre, n:clientes.length, total:total, morosos:morosos, vencido:vencido, pctV:pctV, dso:dso, p0:p0, p31:p31, p61:p61, p90:p90 };
+  }).sort(function(a,b){return b.total-a.total;});
+
+  function agingBar(r) {
+    var html = '<div class="aging-bar-wrap">';
+    if (r.p0  > 3) html += '<div class="aging-seg" style="width:'+r.p0+'%;background:#86efac;color:#15803d;">'+r.p0+'%</div>';
+    if (r.p31 > 3) html += '<div class="aging-seg" style="width:'+r.p31+'%;background:#fde68a;color:#854d0e;">'+r.p31+'%</div>';
+    if (r.p61 > 3) html += '<div class="aging-seg" style="width:'+r.p61+'%;background:#fb923c;color:#7c2d12;">'+r.p61+'%</div>';
+    if (r.p90 > 3) html += '<div class="aging-seg" style="width:'+r.p90+'%;background:#ef4444;color:#7f1d1d;">'+r.p90+'%</div>';
+    return html + '</div>';
+  }
+
+  var tableHtml = '<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#fafafa;border-bottom:2px solid #eee;">' +
+    '<th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;">Vendedor</th>' +
+    '<th style="text-align:right;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;white-space:nowrap;">Clientes</th>' +
+    '<th style="text-align:right;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;white-space:nowrap;">Cartera</th>' +
+    '<th style="text-align:right;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;white-space:nowrap;">Vencido</th>' +
+    '<th style="text-align:right;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;white-space:nowrap;">% Venc.</th>' +
+    '<th style="text-align:right;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;white-space:nowrap;">Morosos</th>' +
+    '<th style="text-align:right;padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;white-space:nowrap;">DSO</th>' +
+    '<th style="padding:8px 12px;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;min-width:120px;">Aging</th>' +
+    '</tr></thead><tbody>';
+  rows.forEach(function(r) {
+    tableHtml += '<tr style="'+(r.morosos>0?'background:#fffbeb;':'')+' border-bottom:1px solid #f0f0f0;">' +
+      '<td style="padding:10px 12px;font-weight:600;">'+r.nombre+'</td>' +
+      '<td style="text-align:right;padding:10px 12px;">'+r.n+'</td>' +
+      '<td style="text-align:right;padding:10px 12px;font-weight:600;">'+fmtShort(r.total)+'</td>' +
+      '<td style="text-align:right;padding:10px 12px;color:'+(r.vencido>0?'#D32027':'#888')+';">'+(r.vencido>0?fmt(r.vencido):'—')+'</td>' +
+      '<td style="text-align:right;padding:10px 12px;font-weight:600;color:'+(r.pctV>30?'#D32027':r.pctV>10?'#b54708':'#16a34a')+';">'+r.pctV+'%</td>' +
+      '<td style="text-align:right;padding:10px 12px;">'+r.morosos+'</td>' +
+      '<td style="text-align:right;padding:10px 12px;font-weight:700;color:'+dsoColor(r.dso)+';">'+r.dso+'d</td>' +
+      '<td style="padding:10px 12px;">'+agingBar(r)+'</td></tr>';
+  });
+  tableHtml += '</tbody></table><p style="font-size:10px;color:#aaa;margin:8px 0 0 0;"><em>DSO = días promedio ponderados de deuda. 🟢 &lt;20d · 🟡 20-40d · 🔴 &gt;40d</em></p>';
+  document.getElementById('vendor-dso-tabla').innerHTML = tableHtml;
+}
+
+function renderPagoComportamiento() {
+  if (!esMaestro) { const el=document.getElementById('pago-panel'); if(el) el.style.display='none'; return; }
+  var d = baseFiltered();
+  var total = d.reduce(function(a,b){return a+b.saldo;}, 0);
+  if (!total) { document.getElementById('pago-contenido').innerHTML = '<p style="color:#888;font-size:13px;">Sin datos.</p>'; return; }
+  var t0=d.reduce(function(a,b){return a+b.entre0_30;},0);
+  var t31=d.reduce(function(a,b){return a+b.entre31_60;},0);
+  var t61=d.reduce(function(a,b){return a+b.entre61_90;},0);
+  var t90=d.reduce(function(a,b){return a+b.mayor90;},0);
+  function pct(v) { return total ? Math.round(v/total*100) : 0; }
+  function barHtml(p0,p31,p61,p90,h) {
+    h = h || 28;
+    var s = '<div class="aging-bar-wrap" style="height:'+h+'px;">';
+    if (p0 >3) s += '<div class="aging-seg" style="width:'+p0+'%;background:#86efac;color:#15803d;">'+p0+'%</div>';
+    if (p31>3) s += '<div class="aging-seg" style="width:'+p31+'%;background:#fde68a;color:#854d0e;">'+p31+'%</div>';
+    if (p61>3) s += '<div class="aging-seg" style="width:'+p61+'%;background:#fb923c;color:#7c2d12;">'+p61+'%</div>';
+    if (p90>3) s += '<div class="aging-seg" style="width:'+p90+'%;background:#ef4444;color:#7f1d1d;">'+p90+'%</div>';
+    return s + '</div>';
+  }
+  var origMap = {};
+  d.forEach(function(r) {
+    if (!origMap[r.origen]) origMap[r.origen] = {t:0,t0:0,t31:0,t61:0,t90:0};
+    var o = origMap[r.origen];
+    o.t+=r.saldo; o.t0+=r.entre0_30; o.t31+=r.entre31_60; o.t61+=r.entre61_90; o.t90+=r.mayor90;
+  });
+  var buckets = [
+    {label:'0-30d', val:t0, pct:pct(t0), bg:'#86efac', tc:'#15803d'},
+    {label:'31-60d', val:t31, pct:pct(t31), bg:'#fde68a', tc:'#854d0e'},
+    {label:'61-90d', val:t61, pct:pct(t61), bg:'#fb923c', tc:'#7c2d12'},
+    {label:'+90d',   val:t90, pct:pct(t90), bg:'#ef4444', tc:'#7f1d1d'},
+  ];
+  var html = '<p style="font-size:11px;color:#666;margin:0 0 12px 0;">Distribución del saldo <strong>'+fmt(total)+'</strong> por antigüedad · corte <strong>'+FECHA_CONTROL.toLocaleDateString('es-CL')+'</strong></p>';
+  html += '<div style="margin-bottom:20px;"><p style="font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px;margin:0 0 6px 0;">Global · toda la cartera</p>';
+  html += barHtml(pct(t0),pct(t31),pct(t61),pct(t90),36);
+  html += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">';
+  buckets.forEach(function(b) {
+    html += '<div style="display:flex;align-items:center;gap:5px;font-size:11px;"><div style="width:10px;height:10px;border-radius:2px;background:'+b.bg+';flex-shrink:0;"></div><span style="color:#666;">'+b.label+'</span><strong style="color:'+b.tc+';">'+fmtShort(b.val)+' ('+b.pct+'%)</strong></div>';
+  });
+  html += '</div></div>';
+  html += '<p style="font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px;margin:0 0 10px 0;">Por sucursal</p>';
+  Object.entries(origMap).sort().forEach(function(entry) {
+    var orig = entry[0], o = entry[1];
+    if (!o.t) return;
+    var p0=Math.round(o.t0/o.t*100), p31=Math.round(o.t31/o.t*100), p61=Math.round(o.t61/o.t*100), p90=Math.round(o.t90/o.t*100);
+    var dsoOrig = calcDSO(d.filter(function(r){return r.origen===orig;}));
+    html += '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;">'+orig+'</span><span style="font-size:11px;color:#888;">DSO '+dsoOrig+'d · '+fmtShort(o.t)+'</span></div>';
+    html += barHtml(p0,p31,p61,p90) + '</div>';
+  });
+  var topCrit = d.filter(function(r){return r.mayor90>0;}).sort(function(a,b){return b.mayor90-a.mayor90;}).slice(0,5);
+  if (topCrit.length) {
+    html += '<p style="font-size:11px;font-weight:600;color:#D32027;text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px 0;">⚠ Top 5 críticos (+90 días)</p><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#fef2f2;border-bottom:2px solid #fecaca;"><th style="text-align:left;padding:6px 10px;font-size:11px;color:#D32027;">Cliente</th><th style="text-align:left;padding:6px 10px;font-size:11px;color:#D32027;">Vendedor</th><th style="text-align:left;padding:6px 10px;font-size:11px;color:#D32027;">Sucursal</th><th style="text-align:right;padding:6px 10px;font-size:11px;color:#D32027;">+90d</th><th style="text-align:right;padding:6px 10px;font-size:11px;color:#D32027;">Saldo</th></tr></thead><tbody>';
+    topCrit.forEach(function(r) {
+      html += '<tr style="border-bottom:1px solid #fee2e2;"><td style="padding:8px 10px;font-weight:600;">'+r.nombre+'</td><td style="padding:8px 10px;color:#666;">'+r.vendedor+'</td><td style="padding:8px 10px;color:#666;">'+r.origen+'</td><td style="padding:8px 10px;text-align:right;color:#D32027;font-weight:700;">'+fmt(r.mayor90)+'</td><td style="padding:8px 10px;text-align:right;font-weight:600;">'+fmt(r.saldo)+'</td></tr>';
+    });
+    html += '</tbody></table>';
+  }
+  document.getElementById('pago-contenido').innerHTML = html;
+}
+
+
+function renderAll() { renderPlazoCards(); renderVendedorResumen(); renderTabs(); renderTable(); renderDSOCards(); renderAcuerdos(); renderVendorDSO(); renderPagoComportamiento(); }
+
+loadComentarios();
+renderAll();
+</script>
+
+</body>
+</html>
